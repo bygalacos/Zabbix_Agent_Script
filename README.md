@@ -14,11 +14,6 @@ Releasing script that installs zabbix agent without any hassle.
 
 To use command line arguments, simply provide the script name and the IP address.
 
-> ./zabbix_agent_5.2.sh 192.168.100.100
-> or
-> ./zabbix_agent_5.2.ps1 192.168.100.100
-> should do the trick.
-
 ## Usage
 
 Zabbix Agent Script requires a Windows, Ubuntu, or CentOS operating system, depending on which platform you're using.
