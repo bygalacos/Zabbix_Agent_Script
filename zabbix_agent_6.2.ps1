@@ -57,7 +57,7 @@ Write-Host "`n[Zabbix Agent] files installed successfully`n" -ForegroundColor Gr
 Start-Sleep -Seconds 3
 
 # Set Variables
-$inputFile = "C:\zabbix_agent\conf\zabbix_agentd.conf"
+$confFile = "C:\zabbix_agent\conf\zabbix_agentd.conf"
 $hostname = hostname.exe
 
 # Check if arguments were provided if not ask user to input
@@ -68,9 +68,9 @@ if ($args) {
 }
 
 # Change Value (LF)
-(Get-Content $inputFile) -join "`n" -replace "Server=127.0.0.1", "Server=$zabbixIP" | Set-Content $inputFile
-(Get-Content $inputFile) -join "`n" -replace "ServerActive=127.0.0.1", "ServerActive=$zabbixIP" | Set-Content $inputFile
-(Get-Content $inputFile) -join "`n" -replace "Hostname=Windows host", "Hostname=$hostname" | Set-Content $inputFile
+(Get-Content $confFile) -join "`n" -replace "Server=127.0.0.1", "Server=$zabbixIP" | Set-Content $confFile
+(Get-Content $confFile) -join "`n" -replace "ServerActive=127.0.0.1", "ServerActive=$zabbixIP" | Set-Content $confFile
+(Get-Content $confFile) -join "`n" -replace "Hostname=Windows host", "Hostname=$hostname" | Set-Content $confFile
 
 # Install & Run
 Start-Sleep -Seconds 1
