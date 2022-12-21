@@ -1,7 +1,7 @@
 ﻿#  Version:        1.0
 #  Author:         bygalacos
 #  Github:         github.com/bygalacos
-#  Creation Date:  21.12.2022
+#  Creation Date:  22.12.2022
 #  Purpose/Change: Initial script development
 
 # Grant Administrator Privileges
@@ -11,7 +11,7 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 }
 else 
 {
-   Write-Host "`nAdministrator Privileges already granted, continuing...`n" -ForegroundColor Green
+   Write-Host "`nAdministrator Privileges granted, continuing...`n" -ForegroundColor Green
 }
 
 # Check If Zabbix Agent Running
@@ -67,10 +67,10 @@ if ($args) {
     $zabbixIP = Read-Host 'Zabbix IP'
 }
 
-# Change Value
-(Get-Content $inputFile) -replace "Server=127.0.0.1", "Server=$zabbixIP" | Set-Content $inputFile
-(Get-Content $inputFile) -replace "ServerActive=127.0.0.1", "ServerActive=$zabbixIP" | Set-Content $inputFile
-(Get-Content $inputFile) -replace "Hostname=Windows host", "Hostname=$hostname" | Set-Content $inputFile
+# Change Value (LF)
+(Get-Content $inputFile) -join "`n" -replace "Server=127.0.0.1", "Server=$zabbixIP" | Set-Content $inputFile
+(Get-Content $inputFile) -join "`n" -replace "ServerActive=127.0.0.1", "ServerActive=$zabbixIP" | Set-Content $inputFile
+(Get-Content $inputFile) -join "`n" -replace "Hostname=Windows host", "Hostname=$hostname" | Set-Content $inputFile
 
 # Install & Run
 Start-Sleep -Seconds 1
