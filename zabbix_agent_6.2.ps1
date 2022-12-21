@@ -4,10 +4,14 @@
 #  Creation Date:  21.12.2022
 #  Purpose/Change: Initial script development
 
-# Check If Administrator Privileges Granted
-if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
+# Grant Administrator Privileges
+if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
 {
-   Throw "This script cannot be run because it contains a statement for running as Administrator. The current Windows PowerShell session is not running as Administrator. Start Windows PowerShell by using the Run as Administrator option, and then try running the script again."
+	Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" `"$args`"" -Verb RunAs; exit
+}
+else 
+{
+   Write-Host "`nAdministrator Privileges already granted, continuing...`n" -ForegroundColor Green
 }
 
 # Check If Zabbix Agent Running
@@ -31,7 +35,7 @@ if (Get-WmiObject -class Win32_Process -Filter 'Name="zabbix_agentd.exe"' -Error
 }
 else 
 {
-Write-Host "`nUnable to find running [Zabbix Agent], continuing...`n"
+   Write-Host "`nUnable to find running [Zabbix Agent], continuing...`n"
 }
 
 # Download & Install Zabbix Agent Files
