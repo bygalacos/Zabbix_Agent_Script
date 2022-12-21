@@ -67,7 +67,7 @@ if ($args) {
     $zabbixIP = Read-Host 'Zabbix IP'
 }
 
-# Change Value
+# Change Value (LF)
 (Get-Content $inputFile) -join "`n" -replace "Server=127.0.0.1", "Server=$zabbixIP" | Set-Content $inputFile
 (Get-Content $inputFile) -join "`n" -replace "ServerActive=127.0.0.1", "ServerActive=$zabbixIP" | Set-Content $inputFile
 (Get-Content $inputFile) -join "`n" -replace "Hostname=Windows host", "Hostname=$hostname" | Set-Content $inputFile
