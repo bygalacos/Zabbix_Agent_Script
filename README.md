@@ -7,6 +7,7 @@ Releasing script that installs zabbix agent without any hassle.
 
 ## Features
 
+- Supports Self-Elevation
 - Detects the operating system and any previous Zabbix agent files
 - More user-friendly installation process
 - Prompts for the "Zabbix Server" IP address, or accepts it as a command line argument
@@ -33,6 +34,8 @@ To set variables without prompting the user:
 ./zabbix_agent_5.2.ps1 192.168.100.100
 ./zabbix_agent_6.2.ps1 192.168.100.100
 ```
+
+Note: Try right click and "Run with Powershell" if you got errors while launching powershell script.
 
 ## License
 
