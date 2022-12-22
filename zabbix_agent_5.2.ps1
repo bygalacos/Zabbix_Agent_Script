@@ -64,7 +64,7 @@ $hostname = hostname.exe
 if ($args) {
     $zabbixIP = $args[0]
 } else {
-    $zabbixIP = Read-Host 'Zabbix IP'
+    $zabbixIP = Read-Host 'Enter the IP address of the Zabbix server'
 }
 
 # Change Value (LF)
