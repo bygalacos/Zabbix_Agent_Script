@@ -43,15 +43,15 @@ fi
 
 # Get IP Address of Zabbix Server
 if [ -z "$1" ]; then
-  read -p "Enter the IP address of the Zabbix server: " server_ip
+  read -p "Enter the IP address of the Zabbix server: " zabbixIP
 else
-  server_ip=$1
+  zabbixIP=$1
 fi
 hostname=$(hostname)
 
 # Replace Server, ServerActive and Hostname in zabbix agent configuration file
-sed -i "s/Server=127.0.0.1/Server=$server_ip/g" /etc/zabbix/zabbix_agentd.conf
-sed -i "s/ServerActive=127.0.0.1/ServerActive=$server_ip/g" /etc/zabbix/zabbix_agentd.conf
+sed -i "s/Server=127.0.0.1/Server=$zabbixIP/g" /etc/zabbix/zabbix_agentd.conf
+sed -i "s/ServerActive=127.0.0.1/ServerActive=$zabbixIP/g" /etc/zabbix/zabbix_agentd.conf
 sed -i "s/Hostname=Zabbix server/Hostname=$hostname/g" /etc/zabbix/zabbix_agentd.conf
 
 # Restart Zabbix Agent
