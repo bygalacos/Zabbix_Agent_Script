@@ -22,7 +22,7 @@ Zabbix Agent Script requires a Windows, Ubuntu, or CentOS operating system, depe
 To launch the script:
 
 ```sh
-./zabbix_agent.sh
+./zabbix_agent_6.2.sh
 ./zabbix_agent_5.2.ps1
 ./zabbix_agent_6.2.ps1
 ```
@@ -30,7 +30,7 @@ To launch the script:
 To set variables without prompting the user:
 
 ```sh
-./zabbix_agent.sh 192.168.100.100
+./zabbix_agent_6.2.sh 192.168.100.100
 ./zabbix_agent_5.2.ps1 192.168.100.100
 ./zabbix_agent_6.2.ps1 192.168.100.100
 ```
