@@ -15,9 +15,8 @@ fi
 if [[ $(grep -Ei 'centos|red hat' /etc/*release) ]]
 then
   # Remove Previous Files
-  #yum erase -y -c zabbix-agent
-  #rm -f /etc/zabbix/zabbix_agentd.conf
-  echo "This feature is under construction"
+  yum erase -y zabbix-agent
+  rm -rf /etc/zabbix/zabbix_agentd.conf.rpmsave
 
   # Update Package Repository & Install Zabbix Agent
   rpm -Uvh https://repo.zabbix.com/zabbix/6.2/rhel/$(rpm -E %{rhel})/x86_64/zabbix-release-6.2-3.el$(rpm -E %{rhel}).noarch.rpm
