@@ -17,8 +17,10 @@ then
   clear
   # Remove Previous Files
   yum erase -y zabbix-agent
-  rm -rf /etc/zabbix/zabbix_agentd.conf.rpmsave
-
+  if [ -f /etc/zabbix/zabbix_agentd.conf.rpmsave ]; then
+    rm -rf /etc/zabbix/zabbix_agentd.conf.rpmsave
+  fi
+  
   # Update Package Repository & Install Zabbix Agent
   rpm -Uvh https://repo.zabbix.com/zabbix/6.2/rhel/$(rpm -E %{rhel})/x86_64/zabbix-release-6.2-3.el$(rpm -E %{rhel}).noarch.rpm
   yum install -y zabbix-agent
