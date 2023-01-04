@@ -21,7 +21,6 @@ then
 
   # Update Package Repository & Install Zabbix Agent
   rpm -Uvh https://repo.zabbix.com/zabbix/6.2/rhel/$(rpm -E %{rhel})/x86_64/zabbix-release-6.2-3.el$(rpm -E %{rhel}).noarch.rpm
-  yum update
   yum install -y zabbix-agent
 
   # Get IP Address of Zabbix Server
