@@ -11,7 +11,7 @@ then
   exit 1
 fi
 
-# Check if running on CentOS 7 or Ubuntu
+# Check if running on CentOS or Ubuntu
 if [[ $(grep -Ei 'centos|red hat' /etc/*release) ]]
 then
   clear
