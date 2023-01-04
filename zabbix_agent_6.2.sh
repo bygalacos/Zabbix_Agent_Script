@@ -4,14 +4,10 @@
 #  Creation Date:  18.12.2023
 #  Purpose/Change: Initial script development
 
-# Check if system is running Ubuntu
-if [ "$(lsb_release -si)" != "Ubuntu" ]; then
-    # Check if system is running CentOS
-    if [ "$(cat /etc/*release | grep '^ID=' | cut -f2 -d\=)" != "centos" ]; then
-        # Exit script if system is not running Ubuntu or CentOS
-        echo "This script only works on Ubuntu or CentOS systems. Exiting."
-        exit 1
-    fi
+# Check the operating system
+if [ "$(cat /etc/os-release | grep -w ID | awk -F '=' '{print $2}')" != "ubuntu" ] && [ "$(cat /etc/os-release | grep -w ID | awk -F '=' '{print $2}')" != "centos" ]; then
+    # Exit the script
+    exit 1
 fi
 
 # Check if running as root
