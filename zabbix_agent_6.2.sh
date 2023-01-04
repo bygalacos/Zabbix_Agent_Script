@@ -14,6 +14,7 @@ fi
 # Check if running on CentOS 7 or Ubuntu
 if [[ $(grep -Ei 'centos|red hat' /etc/*release) ]]
 then
+  clear
   # Remove Previous Files
   yum erase -y zabbix-agent
   rm -rf /etc/zabbix/zabbix_agentd.conf.rpmsave
@@ -21,6 +22,7 @@ then
   # Update Package Repository & Install Zabbix Agent
   rpm -Uvh https://repo.zabbix.com/zabbix/6.2/rhel/$(rpm -E %{rhel})/x86_64/zabbix-release-6.2-3.el$(rpm -E %{rhel}).noarch.rpm
   yum install -y zabbix-agent
+  clear
 
   # Get IP Address of Zabbix Server
   if [ -z "$1" ]; then
@@ -36,12 +38,14 @@ then
   sed -i "s/Hostname=Zabbix server/Hostname=$hostname/g" /etc/zabbix/zabbix_agentd.conf
   
   # Restart Zabbix Agent
-  systemctl restart zabbix-agent
-  systemctl enable zabbix-agent
+  systemctl restart zabbix-agent && systemctl enable zabbix-agent
+  clear
+  systemctl status zabbix-agent
   exit 1
   fi
 elif [[ $(grep -Ei 'ubuntu' /etc/*release) ]]
 then
+  clear
   # Remove Previous Files
   apt-get purge -y zabbix-agent
 
@@ -50,6 +54,7 @@ then
   dpkg -i zabbix-release_* && rm -rf zabbix-release_*
   apt-get update
   apt-get install -y zabbix-agent
+  clear
 
   # Get IP Address of Zabbix Server
   if [ -z "$1" ]; then
@@ -65,8 +70,9 @@ then
   sed -i "s/Hostname=Zabbix server/Hostname=$hostname/g" /etc/zabbix/zabbix_agentd.conf
   
   # Restart Zabbix Agent
-  systemctl restart zabbix-agent
-  systemctl enable zabbix-agent
+  systemctl restart zabbix-agent && systemctl enable zabbix-agent
+  clear
+  systemctl status zabbix-agent
   exit 1
 else
   echo "Unsupported operating system"
