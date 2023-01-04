@@ -5,10 +5,7 @@
 #  Purpose/Change: Initial script development
 
 # Check the operating system
-if [ "$(cat /etc/os-release | grep -w ID | awk -F '=' '{print $2}')" != "ubuntu" ] && [ "$(cat /etc/os-release | grep -w ID | awk -F '=' '{print $2}')" != "centos" ]; then
-    # Exit the script
-    exit 1
-fi
+#
 
 # Check if running as root
 if [[ $(id -u) -ne 0 ]]
