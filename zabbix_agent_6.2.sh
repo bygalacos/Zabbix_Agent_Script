@@ -45,7 +45,7 @@ then
   systemctl status zabbix-agent
   exit 1
   fi
-elif [[ $(grep -Ei 'ubuntu' /etc/*release) ]]
+if [[ $(grep -Ei 'ubuntu' /etc/*release) ]]
 then
   clear
   # Remove Previous Files
