@@ -10,7 +10,7 @@ if [[ $(id -u) -ne 0 ]]; then
   exit 1
 fi
 
-# Check if running on CentOS or Ubuntu
+# Check if running on CentOS
 if [[ $(grep -Ei 'centos|red hat' /etc/*release) ]]; then
   clear
   # Remove Previous Files
@@ -43,6 +43,8 @@ if [[ $(grep -Ei 'centos|red hat' /etc/*release) ]]; then
   systemctl status zabbix-agent
   exit 1
 fi
+
+# Check if running on Ubuntu
 if [[ $(grep -Ei 'ubuntu' /etc/*release) ]]; then
   clear
   # Remove Previous Files
