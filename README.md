@@ -17,7 +17,7 @@ To use command line arguments, simply provide the script name and the IP address
 
 ## Usage
 
-Zabbix Agent Script requires a Windows, Ubuntu or CentOS operating system, depending on which platform you're using.
+Please note that Zabbix Agent Script requires a Windows, Ubuntu or CentOS operating system, depending on which platform you're using.
 
 ```sh
 First grant executable permissions using chmod +x zabbix_agent_6.2.sh
@@ -39,10 +39,10 @@ To set variables without prompting the user:
 ./zabbix_agent_6.2.ps1 192.168.100.100
 ```
 
-Note: Try right click and "Run with Powershell" if you got errors while launching powershell script.
+Note: If you encounter any errors while launching the script, try right-clicking and selecting "Run with Powershell".
 
 ## License
 
-GPL-3.0
+This software is licensed under GPL-3.0
 
 **Made with ♥ by bygalacos**
