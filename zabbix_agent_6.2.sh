@@ -43,7 +43,7 @@ if [[ $(grep -Ei 'centos|red hat' /etc/*release) ]]; then
   systemctl restart zabbix-agent && systemctl enable zabbix-agent
   clear
   systemctl status zabbix-agent
-  exit 1
+  exit 0
 fi
 
 # Check if running on Ubuntu
@@ -77,8 +77,8 @@ if [[ $(grep -Ei 'ubuntu' /etc/*release) ]]; then
   systemctl restart zabbix-agent && systemctl enable zabbix-agent
   clear
   systemctl status zabbix-agent
-  exit 1
-else
+  exit 0
+fi
+
   echo "Unsupported operating system"
   exit 1
-fi
