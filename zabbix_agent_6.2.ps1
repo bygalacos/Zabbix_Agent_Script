@@ -48,7 +48,7 @@ if (Test-Path -Path C:\zabbix_agentd.log) {
     Remove-Item C:\zabbix_agentd.log -Force
 }
 Start-Sleep -Seconds 1
-$zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.2/6.2.6/zabbix_agent-6.2.6-windows-amd64.zip"
+$zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.2/6.2.7/zabbix_agent-6.2.7-windows-amd64.zip"
 $extractPath = "C:\zabbix_agent"
 Invoke-WebRequest -Uri $zipUrl -OutFile "$env:TEMP\zabbix_agent.zip"
 Expand-Archive -Path "$env:TEMP\zabbix_agent.zip" -DestinationPath $extractPath
