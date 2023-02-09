@@ -13,6 +13,8 @@ fi
 # Check if running on CentOS
 if [[ $(grep -Ei 'centos|red hat' /etc/*release) ]]; then
   clear
+  setenforce 0 && sed -i 's/^SELINUX=.*/SELINUX=permissive/g' /etc/selinux/config
+  
   # Remove Previous Files
   yum erase -y zabbix-agent
   if [ -f /etc/zabbix/zabbix_agentd.conf.rpmsave ]; then
@@ -47,6 +49,7 @@ fi
 # Check if running on Ubuntu
 if [[ $(grep -Ei 'ubuntu' /etc/*release) ]]; then
   clear
+  
   # Remove Previous Files
   apt-get purge -y zabbix-agent
 
