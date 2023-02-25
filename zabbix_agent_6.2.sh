@@ -35,7 +35,7 @@ if [[ $(grep -Ei 'centos|red hat' /etc/*release) ]]; then
   fi
   hostname=$(hostname)
 
-  # Replace Server, ServerActive and Hostname in zabbix agent configuration file
+  # Replace Server, ServerActive and Hostname in Zabbix Agent configuration file
   sed -i "s/Server=127.0.0.1/Server=$zabbixIP/g" /etc/zabbix/zabbix_agentd.conf
   sed -i "s/ServerActive=127.0.0.1/ServerActive=$zabbixIP/g" /etc/zabbix/zabbix_agentd.conf
   sed -i "s/Hostname=Zabbix server/Hostname=$hostname/g" /etc/zabbix/zabbix_agentd.conf
@@ -71,7 +71,7 @@ if [[ $(grep -Ei 'ubuntu' /etc/*release) ]]; then
   fi
   hostname=$(hostname)
 
-  # Replace Server, ServerActive and Hostname in zabbix agent configuration file
+  # Replace Server, ServerActive and Hostname in Zabbix Agent configuration file
   sed -i "s/Server=127.0.0.1/Server=$zabbixIP/g" /etc/zabbix/zabbix_agentd.conf
   sed -i "s/ServerActive=127.0.0.1/ServerActive=$zabbixIP/g" /etc/zabbix/zabbix_agentd.conf
   sed -i "s/Hostname=Zabbix server/Hostname=$hostname/g" /etc/zabbix/zabbix_agentd.conf
