@@ -22,6 +22,7 @@ if [[ $(grep -Ei 'centos|red hat' /etc/*release) ]]; then
   fi
 
   # Update Package Repository & Install Zabbix Agent
+  yum install -y ca-certificates
   rpm -Uvh https://repo.zabbix.com/zabbix/6.2/rhel/$(rpm -E %{rhel})/x86_64/zabbix-release-6.2-3.el$(rpm -E %{rhel}).noarch.rpm
   yum install -y zabbix-agent
   clear
@@ -54,6 +55,8 @@ if [[ $(grep -Ei 'ubuntu' /etc/*release) ]]; then
   apt-get purge -y zabbix-agent
 
   # Update Package Repository & Install Zabbix Agent
+  apt-get update
+  apt-get install -y ca-certificates
   wget https://repo.zabbix.com/zabbix/6.2/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.2-4+ubuntu$(lsb_release -rs)_all.deb
   dpkg -i zabbix-release_* && rm -rf zabbix-release_*
   apt-get update
