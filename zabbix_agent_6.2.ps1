@@ -48,11 +48,24 @@ if (Test-Path -Path C:\zabbix_agentd.log) {
     Remove-Item C:\zabbix_agentd.log -Force
 }
 Start-Sleep -Seconds 1
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType] 'Ssl3, Tls, Tls11, Tls12, Tls13'
 $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.2/6.2.9/zabbix_agent-6.2.9-windows-amd64.zip"
 $extractPath = "C:\zabbix_agent"
+if (Test-Path -Path $env:TEMP\zabbix_agent.zip) {
+    Remove-Item C:\zabbix_agentd.log -Force
+}
 Invoke-WebRequest -Uri $zipUrl -OutFile "$env:TEMP\zabbix_agent.zip"
+Start-Sleep -Seconds 3
+if (!(Test-Path -Path $env:TEMP\zabbix_agent.zip)) {
+    Write-Host "`n[Zabbix Agent] download failed. Terminating execution.`n" -ForegroundColor Red
+    exit 1
+}
 Expand-Archive -Path "$env:TEMP\zabbix_agent.zip" -DestinationPath $extractPath
 Remove-Item "$env:TEMP\zabbix_agent.zip" -Force
+if (!(Test-Path -Path C:\zabbix_agent)) {
+    Write-Host "`n[Zabbix Agent] installation failed. Terminating execution.`n" -ForegroundColor Red
+    exit 1
+}
 Write-Host "`n[Zabbix Agent] files installed successfully`n" -ForegroundColor Green
 Start-Sleep -Seconds 3
 
@@ -91,6 +104,6 @@ Write-Host "`nMade with ♥ by bygalacos`n" -ForegroundColor Yellow
 Write-Host "`nhttps://github.com/bygalacos`n" -ForegroundColor Yellow
 Start-Sleep 3
 Write-Host "`n!!!WARNING!!!`n" -ForegroundColor Red
-Write-Host "`nThis session will self destruct in 5 seconds...`n" -ForegroundColor Yellow
+Write-Host "`nThis session will self destruct in 5 seconds...`n" -ForegroundColor Red
 Start-Sleep 5
 stop-process -Id $PID
