@@ -48,7 +48,7 @@ if (Test-Path -Path C:\zabbix_agentd.log) {
     Remove-Item C:\zabbix_agentd.log -Force
 }
 Start-Sleep -Seconds 1
-[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType] 'Ssl3, Tls, Tls11, Tls12, Tls13'
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType] 'Ssl3, Tls, Tls11, Tls12'
 $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.2/6.2.9/zabbix_agent-6.2.9-windows-amd64.zip"
 $extractPath = "C:\zabbix_agent"
 if (Test-Path -Path $env:TEMP\zabbix_agent.zip) {
