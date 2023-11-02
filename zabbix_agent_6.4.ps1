@@ -4,6 +4,17 @@
 #  Creation Date:  22.12.2022
 #  Purpose/Change: Initial script development
 
+# Check Required PowerShell Version
+$minimumRequiredVersion = [Version]"3.0"
+$psVersion = $PSVersionTable.PSVersion
+if ($psVersion -lt $minimumRequiredVersion) {
+    Write-Host "`nThis script requires PowerShell version $minimumRequiredVersion or later.`n" -ForegroundColor Red
+    Write-Host "`nPlease upgrade PowerShell and try running the script again.`n" -ForegroundColor Red
+    Write-Host "`nTerminating execution in 5 seconds...`n" -ForegroundColor Red
+    Start-Sleep 5
+    exit 1
+}
+
 # Grant Administrator Privileges
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
 {
@@ -48,19 +59,39 @@ if (Test-Path -Path C:\zabbix_agentd.log) {
     Remove-Item C:\zabbix_agentd.log -Force
 }
 Start-Sleep -Seconds 1
-[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType] 'Ssl3, Tls, Tls11, Tls12'
-$zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.7/zabbix_agent-6.4.7-windows-amd64.zip"
+$protocols = 'Ssl3,Tls,Tls11,Tls12,Tls13' -split ',' | Where-Object { [System.Enum]::IsDefined([System.Net.SecurityProtocolType], $_) }
+[System.Net.ServicePointManager]::SecurityProtocol = $protocols -join ','
+Write-Host "`n[Zabbix Agent] Available security protocols: $([System.Net.ServicePointManager]::SecurityProtocol)`n"
+if ($env:PROCESSOR_ARCHITECTURE -eq "AMD64") {
+    Write-Host "`n[Zabbix Agent] Detected System Architecture: AMD64`n"
+    $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.8/zabbix_agent-6.4.8-windows-amd64.zip"
+} 
+elseif ($env:PROCESSOR_ARCHITECTURE -eq "x86") {
+    Write-Host "`n[Zabbix Agent] Detected System Architecture: x86`n"
+    $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.8/zabbix_agent-6.4.8-windows-i386.zip"
+}
+else {
+    Write-Host "`n[Zabbix Agent] Unsupported System Architecture. Terminating execution in 5 seconds.`n" -ForegroundColor Red
+    Start-Sleep 5
+    exit 1
+}
 $extractPath = "C:\zabbix_agent"
-if (Test-Path -Path $env:TEMP\zabbix_agent.zip) {
+if (Test-Path -Path C:\zabbix_agentd.log) {
     Remove-Item C:\zabbix_agentd.log -Force
 }
 Invoke-WebRequest -Uri $zipUrl -OutFile "$env:TEMP\zabbix_agent.zip"
 Start-Sleep -Seconds 3
 if (!(Test-Path -Path $env:TEMP\zabbix_agent.zip)) {
-    Write-Host "`n[Zabbix Agent] download failed. Terminating execution.`n" -ForegroundColor Red
+    Write-Host "`n[Zabbix Agent] download failed. Terminating execution in 5 seconds.`n" -ForegroundColor Red
+    Start-Sleep 5
     exit 1
 }
-Expand-Archive -Path "$env:TEMP\zabbix_agent.zip" -DestinationPath $extractPath
+if (Get-Command Expand-Archive -ErrorAction SilentlyContinue) {
+    Expand-Archive -Path "$env:TEMP\zabbix_agent.zip" -DestinationPath "$extractPath"
+} else {
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    [System.IO.Compression.ZipFile]::ExtractToDirectory("$env:TEMP\zabbix_agent.zip", "$extractPath")
+}
 Remove-Item "$env:TEMP\zabbix_agent.zip" -Force
 Write-Host "`n[Zabbix Agent] files installed successfully`n" -ForegroundColor Green
 Start-Sleep -Seconds 3
