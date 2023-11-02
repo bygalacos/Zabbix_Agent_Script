@@ -125,7 +125,7 @@ Start-Sleep -Seconds 1
 # Script Cleanup
 Write-Host "`n[Zabbix Agent] installation script leftovers removing...`n"
 Start-Sleep -Seconds 3
-Remove-Item $MyInvocation.MyCommand.Source
+Remove-Item $PSCommandPath -Force
 Write-Host "`n[Zabbix Agent] installation script leftovers removed successfully`n" -ForegroundColor Green
 Write-Host "`nMade with ♥ by bygalacos`n" -ForegroundColor Yellow
 Write-Host "`nhttps://github.com/bygalacos`n" -ForegroundColor Yellow
