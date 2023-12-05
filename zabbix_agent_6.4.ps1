@@ -4,6 +4,21 @@
 #  Creation Date:  22.12.2022
 #  Purpose/Change: Initial script development
 
+param (
+    [string]$ip,
+    [string]$hostname
+)
+
+clear
+
+$validArguments = @("-ip", "-hostname")
+$unexpectedArguments =  $args | Where-Object { $_ -notin $validArguments }
+if ($unexpectedArguments.Count -gt 0) {
+    Write-Host "Usage: script.ps1 -ip <IP_Address> -hostname <HostName>"
+    Write-Host "Error: Unexpected argument(s): $($unexpectedArguments -join ', ')" -ForegroundColor Red
+    exit 1
+}
+
 # Check Required PowerShell Version
 $minimumRequiredVersion = [Version]"3.0"
 $psVersion = $PSVersionTable.PSVersion
@@ -26,10 +41,10 @@ else
 }
 
 # Check If Zabbix Agent Running
-if (Get-WmiObject -class Win32_Process -Filter 'Name="zabbix_agentd.exe"' -ErrorAction SilentlyContinue)
-{ 
-   $pathZabbixExe = (Get-WmiObject -class Win32_Process -Filter 'Name="zabbix_agentd.exe"').path
-   $pathZabbixFolder = (Get-WmiObject -class Win32_Process -Filter 'Name="zabbix_agentd.exe"').path.SubString(0, (Get-WmiObject -class Win32_Process -Filter 'Name="zabbix_agentd.exe"').path.LastIndexOf('\')) | Split-Path
+$zabbixProcess = Get-WmiObject -Class Win32_Process -Filter 'Name="zabbix_agentd.exe"'
+if ($zabbixProcess) {
+    $pathZabbixExe = $zabbixProcess.Path
+    $pathZabbixFolder = Split-Path -Path $pathZabbixExe | Split-Path
    Write-Host "`n[Zabbix Agent] already running, uninstalling...`n"
    Start-Sleep -Seconds 1
    & $pathZabbixExe --config $pathZabbixFolder\conf\zabbix_agentd.conf --stop
@@ -64,11 +79,11 @@ $protocols = 'Ssl3,Tls,Tls11,Tls12,Tls13' -split ',' | Where-Object { [System.En
 Write-Host "`n[Zabbix Agent] Available security protocols: $([System.Net.ServicePointManager]::SecurityProtocol)`n"
 if ($env:PROCESSOR_ARCHITECTURE -eq "AMD64") {
     Write-Host "`n[Zabbix Agent] Detected System Architecture: AMD64`n"
-    $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.8/zabbix_agent-6.4.8-windows-amd64.zip"
+    $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.9/zabbix_agent-6.4.9-windows-amd64.zip"
 } 
 elseif ($env:PROCESSOR_ARCHITECTURE -eq "x86") {
     Write-Host "`n[Zabbix Agent] Detected System Architecture: x86`n"
-    $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.8/zabbix_agent-6.4.8-windows-i386.zip"
+    $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.9/zabbix_agent-6.4.9-windows-i386.zip"
 }
 else {
     Write-Host "`n[Zabbix Agent] Unsupported System Architecture. Terminating execution in 5 seconds.`n" -ForegroundColor Red
@@ -94,18 +109,20 @@ if (Get-Command Expand-Archive -ErrorAction SilentlyContinue) {
 }
 Remove-Item "$env:TEMP\zabbix_agent.zip" -Force
 Write-Host "`n[Zabbix Agent] files installed successfully`n" -ForegroundColor Green
-Start-Sleep -Seconds 3
 
 # Set Variables
 $confFile = "C:\zabbix_agent\conf\zabbix_agentd.conf"
-$hostname = hostname.exe
 
-# Check if arguments were provided if not ask user to input
-if ($args) {
-    $zabbixIP = $args[0]
-} else {
-    $zabbixIP = Read-Host 'Enter the IP address of the Zabbix server'
+# Check if the IP and hostname parameters are provided, otherwise, ask the user for input
+if (!($ip)) {
+    $ip = Read-Host 'Enter the IP address of the Zabbix server'
 }
+if (!($hostname)) {
+    $hostname = hostname.exe
+}
+
+Write-Host "`n[Zabbix Agent] Current configuration: IP Address: $ip & Hostname: $hostname`n" -ForegroundColor Yellow
+Start-Sleep -Seconds 3
 
 # Change Value (LF)
 (Get-Content $confFile) -join "`n" -replace "Server=127.0.0.1", "Server=$zabbixIP" | Set-Content $confFile
