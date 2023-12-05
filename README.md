@@ -7,11 +7,15 @@ Releasing script that installs zabbix agent without any hassle.
 
 ## Features
 
-- Supports Self-Elevation
+- Checks if PowerShell version is higher or equal to 3.0 **(Windows Only)**
+- Supports Self-Elevation **(Windows Only)**
 - Detects the operating system and any previous Zabbix agent files
 - More user-friendly installation process
+- Added SSL & TLS support for better handling while downloading
+- Supports both x64 and x86 system architectures **(Windows Only)**
 - Prompts for the "Zabbix Server" IP address, or accepts it as a command line argument
-- Organizes log files on Windows systems
+- The hostname can be automatically assigned or specified as a command line argument **(Windows Only)**
+- Organizes log files **(Windows Only)**
 
 To use command line arguments, simply provide the script name and the IP address.
 
@@ -26,17 +30,16 @@ First grant executable permissions using chmod +x zabbix_agent_6.2.sh
 To launch the script:
 
 ```sh
-./zabbix_agent_6.2.sh
-./zabbix_agent_5.2.ps1
-./zabbix_agent_6.2.ps1
+./zabbix_agent_6.0.sh
+./zabbix_agent_6.0.ps1
 ```
 
 To set variables without prompting the user:
 
 ```sh
-./zabbix_agent_6.2.sh 192.168.100.100
-./zabbix_agent_5.2.ps1 192.168.100.100
-./zabbix_agent_6.2.ps1 192.168.100.100
+./zabbix_agent_6.0.sh 192.168.100.100
+./zabbix_agent_6.0.ps1 -ip 192.168.100.100
+./zabbix_agent_6.0.ps1 -ip 192.168.100.100 -hostname hostname
 ```
 
 Note: If you encounter any errors while launching the script, try right-clicking and selecting "Run with Powershell".
