@@ -12,7 +12,7 @@ param (
 clear
 
 $validArguments = @("-ip", "-hostname")
-$unexpectedArguments =  $args | Where-Object { $_ -notin $validArguments }
+$unexpectedArguments = $args | Where-Object { $_ -notin $validArguments }
 if ($unexpectedArguments.Count -gt 0) {
     Write-Host "Usage: script.ps1 -ip <IP_Address> -hostname <HostName>"
     Write-Host "Error: Unexpected argument(s): $($unexpectedArguments -join ', ')" -ForegroundColor Red
@@ -31,14 +31,22 @@ if ($psVersion -lt $minimumRequiredVersion) {
 }
 
 # Grant Administrator Privileges
-if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
-{
-   $scriptArgs = "-ip $ip -hostname $hostname"
-   Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" $scriptArgs" -Verb RunAs; exit
+if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    $scriptPath = $MyInvocation.MyCommand.Definition
+    $argumentString = ""
+
+    # Loop through each parameter and reconstruct the argument string
+    foreach ($param in $MyInvocation.MyCommand.Parameters.Keys) {
+        if ($PSBoundParameters[$param]) {
+            $argumentString += " -$param `"$($PSBoundParameters[$param])`""
+        }
+    }
+
+    # Relaunch the script as an administrator with the arguments
+    Start-Process PowerShell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$scriptPath`" $argumentString" -Verb RunAs; exit
 }
-else 
-{
-   Write-Host "`nAdministrator Privileges granted, continuing...`n" -ForegroundColor Green
+else {
+    Write-Host "`nAdministrator Privileges granted, continuing...`n" -ForegroundColor Green
 }
 
 # Check If Zabbix Agent Running
@@ -46,23 +54,22 @@ $zabbixProcess = Get-WmiObject -Class Win32_Process -Filter 'Name="zabbix_agentd
 if ($zabbixProcess) {
     $pathZabbixExe = $zabbixProcess.Path
     $pathZabbixFolder = Split-Path -Path $pathZabbixExe | Split-Path
-   Write-Host "`n[Zabbix Agent] already running, uninstalling...`n"
-   Start-Sleep -Seconds 1
-   & $pathZabbixExe --config $pathZabbixFolder\conf\zabbix_agentd.conf --stop
-   Start-Sleep -Seconds 1
-   & $pathZabbixExe --config $pathZabbixFolder\conf\zabbix_agentd.conf --uninstall
-   Start-Sleep -Seconds 3
-   Remove-Item $pathZabbixFolder -Force -Recurse
-   if (Test-Path -Path C:\zabbix_agentd.log) {
-       $logdate = Get-Date -Format "dd.MM.yyyy_HH.mm"
-       Rename-Item -Path "C:\zabbix_agentd.log" -NewName "C:\zabbix_agentd_$logdate.log"
-       Write-Host "`n[Zabbix Agent] Log renamed successfully`n"
-   }
-   Write-Host "`n[Zabbix Agent] removed successfully`n" -ForegroundColor Green
+    Write-Host "`n[Zabbix Agent] already running, uninstalling...`n"
+    Start-Sleep -Seconds 1
+    & $pathZabbixExe --config $pathZabbixFolder\conf\zabbix_agentd.conf --stop
+    Start-Sleep -Seconds 1
+    & $pathZabbixExe --config $pathZabbixFolder\conf\zabbix_agentd.conf --uninstall
+    Start-Sleep -Seconds 3
+    Remove-Item $pathZabbixFolder -Force -Recurse
+    if (Test-Path -Path C:\zabbix_agentd.log) {
+        $logdate = Get-Date -Format "dd.MM.yyyy_HH.mm"
+        Rename-Item -Path "C:\zabbix_agentd.log" -NewName "C:\zabbix_agentd_$logdate.log"
+        Write-Host "`n[Zabbix Agent] Log renamed successfully`n"
+    }
+    Write-Host "`n[Zabbix Agent] removed successfully`n" -ForegroundColor Green
 }
-else 
-{
-   Write-Host "`nUnable to find running [Zabbix Agent], continuing...`n"
+else {
+    Write-Host "`nUnable to find running [Zabbix Agent], continuing...`n"
 }
 
 # Download & Install Zabbix Agent Files
@@ -104,7 +111,8 @@ if (!(Test-Path -Path $env:TEMP\zabbix_agent.zip)) {
 }
 if (Get-Command Expand-Archive -ErrorAction SilentlyContinue) {
     Expand-Archive -Path "$env:TEMP\zabbix_agent.zip" -DestinationPath "$extractPath"
-} else {
+}
+else {
     Add-Type -AssemblyName System.IO.Compression.FileSystem
     [System.IO.Compression.ZipFile]::ExtractToDirectory("$env:TEMP\zabbix_agent.zip", "$extractPath")
 }
@@ -131,8 +139,8 @@ Write-Host "`n[Zabbix Agent] Current configuration: IP Address: $ip & Hostname: 
 Start-Sleep -Seconds 3
 
 # Change Value (LF)
-(Get-Content $confFile) -join "`n" -replace "Server=127.0.0.1", "Server=$zabbixIP" | Set-Content $confFile
-(Get-Content $confFile) -join "`n" -replace "ServerActive=127.0.0.1", "ServerActive=$zabbixIP" | Set-Content $confFile
+(Get-Content $confFile) -join "`n" -replace "Server=127.0.0.1", "Server=$ip" | Set-Content $confFile
+(Get-Content $confFile) -join "`n" -replace "ServerActive=127.0.0.1", "ServerActive=$ip" | Set-Content $confFile
 (Get-Content $confFile) -join "`n" -replace "Hostname=Windows host", "Hostname=$hostname" | Set-Content $confFile
 
 # Install & Run
