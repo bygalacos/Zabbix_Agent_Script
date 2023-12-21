@@ -87,11 +87,11 @@ $protocols = 'Ssl3,Tls,Tls11,Tls12,Tls13' -split ',' | Where-Object { [System.En
 Write-Host "`n[Zabbix Agent] Available security protocols: $([System.Net.ServicePointManager]::SecurityProtocol)`n"
 if ($env:PROCESSOR_ARCHITECTURE -eq "AMD64") {
     Write-Host "`n[Zabbix Agent] Detected System Architecture: AMD64`n"
-    $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.24/zabbix_agent-6.0.24-windows-amd64.zip"
+    $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.25/zabbix_agent-6.0.25-windows-amd64.zip"
 } 
 elseif ($env:PROCESSOR_ARCHITECTURE -eq "x86") {
     Write-Host "`n[Zabbix Agent] Detected System Architecture: x86`n"
-    $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.24/zabbix_agent-6.0.24-windows-i386.zip"
+    $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.25/zabbix_agent-6.0.25-windows-i386.zip"
 }
 else {
     Write-Host "`n[Zabbix Agent] Unsupported System Architecture. Terminating execution in 5 seconds.`n" -ForegroundColor Red
