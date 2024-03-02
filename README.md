@@ -16,6 +16,8 @@ Releasing script that installs zabbix agent without any hassle.
 - Prompts for the "Zabbix Server" IP address, or accepts it as a command line argument
 - The hostname can be automatically assigned or specified as a command line argument **(Windows Only)**
 - Organizes log files **(Windows Only)**
+- Supports update w/o changing config file **(Windows Only)**
+- Now support both Agent & Agent2
 
 To use command line arguments, simply provide the script name and the IP address.
 
@@ -40,6 +42,13 @@ To set variables without prompting the user:
 ./zabbix_agent_6.0.sh 192.168.100.100
 ./zabbix_agent_6.0.ps1 -ip 192.168.100.100
 ./zabbix_agent_6.0.ps1 -ip 192.168.100.100 -hostname hostname
+```
+
+Guide for Zabbix_Agent_Script.ps1:
+
+```sh
+./Zabbix_Agent_Script.ps1
+./Zabbix_Agent_Script.ps1 -agent <1 or 2> -version <6.0 or 6.2 or 6.4> -ip <IP_Address> -hostname <HostName>"
 ```
 
 Note: If you encounter any errors while launching the script, try right-clicking and selecting "Run with Powershell".
