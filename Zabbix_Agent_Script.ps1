@@ -25,20 +25,6 @@ if ($unexpectedArguments.Count -gt 0) {
     Write-Host "`nTerminating execution.`n" -ForegroundColor Red
     exit 1
 }
-# Validate mandatory arguments
-if (-not $agent -or -not $version) {
-    Write-Host "Error: -agent and -version are mandatory. For more help <script.ps1 -help>" -ForegroundColor Red
-    Write-Host "`nTerminating execution.`n" -ForegroundColor Red
-    exit 1
-}
-# Additional checks based on -saveConfig presence
-if (-not $saveConfig) {
-    if (-not $ip) {
-        Write-Host "Error: -ip is mandatory when -saveConfig is not used. For more help <script.ps1 -help>" -ForegroundColor Red
-        Write-Host "`nTerminating execution.`n" -ForegroundColor Red
-        exit 1
-    }
-}
 
 # Check Required PowerShell Version
 $minimumRequiredVersion = [Version]"3.0"
