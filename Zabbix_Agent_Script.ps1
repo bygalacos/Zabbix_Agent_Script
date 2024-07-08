@@ -258,10 +258,10 @@ function downloadAgent {
     $architecture = $env:PROCESSOR_ARCHITECTURE
     if ($version -eq "6.0") {
         if ($architecture -eq "AMD64") {
-            $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.29/zabbix_agent-6.0.29-windows-amd64.zip"
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.29/zabbix_agent-6.0.29-windows-amd64.zip"
         }
         elseif ($architecture -eq "x86") {
-            $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.29/zabbix_agent-6.0.29-windows-i386.zip"
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.29/zabbix_agent-6.0.29-windows-i386.zip"
         }
         else {
             Write-Host "`n[Zabbix Agent] Unsupported System Architecture. Terminating execution in 5 seconds.`n" -ForegroundColor Red
@@ -271,10 +271,10 @@ function downloadAgent {
     }
     elseif ($version -eq "6.2") {
         if ($architecture -eq "AMD64") {
-            $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.2/6.2.9/zabbix_agent-6.2.9-windows-amd64.zip"
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.2/6.2.9/zabbix_agent-6.2.9-windows-amd64.zip"
         }
         elseif ($architecture -eq "x86") {
-            $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.2/6.2.9/zabbix_agent-6.2.9-windows-i386.zip"
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.2/6.2.9/zabbix_agent-6.2.9-windows-i386.zip"
         }
         else {
             Write-Host "`n[Zabbix Agent] Unsupported System Architecture. Terminating execution in 5 seconds.`n" -ForegroundColor Red
@@ -284,10 +284,10 @@ function downloadAgent {
     }
     elseif ($version -eq "6.4") {
         if ($architecture -eq "AMD64") {
-            $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.16/zabbix_agent-6.4.16-windows-amd64.zip"
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.16/zabbix_agent-6.4.16-windows-amd64.zip"
         }
         elseif ($architecture -eq "x86") {
-            $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.16/zabbix_agent-6.4.16-windows-i386.zip"
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.16/zabbix_agent-6.4.16-windows-i386.zip"
         }
         else {
             Write-Host "`n[Zabbix Agent] Unsupported System Architecture. Terminating execution in 5 seconds.`n" -ForegroundColor Red
@@ -308,7 +308,7 @@ function downloadAgent {
     if (Test-Path -Path "C:\zabbix_agentd.log") {
         Remove-Item "C:\zabbix_agentd.log" -Force
     }
-    Invoke-WebRequest -Uri $zipUrl -OutFile "$env:TEMP\zabbix_agent.zip"
+    Invoke-WebRequest -Uri $agentUrl -OutFile "$env:TEMP\zabbix_agent.zip"
     Start-Sleep -Seconds 3
     if (!(Test-Path -Path "$env:TEMP\zabbix_agent.zip")) {
         Write-Host "`n[Zabbix Agent] Download failed. Terminating execution in 5 seconds.`n" -ForegroundColor Red
@@ -355,10 +355,10 @@ function downloadAgent2 {
     $architecture = $env:PROCESSOR_ARCHITECTURE
     if ($version -eq "6.0") {
         if ($architecture -eq "AMD64") {
-            $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.29/zabbix_agent2-6.0.29-windows-amd64-static.zip"
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.29/zabbix_agent2-6.0.29-windows-amd64-static.zip"
         }
         elseif ($architecture -eq "x86") {
-            $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.29/zabbix_agent2-6.0.29-windows-i386-static.zip"
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.29/zabbix_agent2-6.0.29-windows-i386-static.zip"
         }
         else {
             Write-Host "`n[Zabbix Agent 2] Unsupported System Architecture. Terminating execution in 5 seconds.`n" -ForegroundColor Red
@@ -368,10 +368,10 @@ function downloadAgent2 {
     }
     elseif ($version -eq "6.2") {
         if ($architecture -eq "AMD64") {
-            $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.2/6.2.9/zabbix_agent2-6.2.9-windows-amd64-static.zip"
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.2/6.2.9/zabbix_agent2-6.2.9-windows-amd64-static.zip"
         }
         elseif ($architecture -eq "x86") {
-            $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.2/6.2.9/zabbix_agent2-6.2.9-windows-i386-static.zip"
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.2/6.2.9/zabbix_agent2-6.2.9-windows-i386-static.zip"
         }
         else {
             Write-Host "`n[Zabbix Agent 2] Unsupported System Architecture. Terminating execution in 5 seconds.`n" -ForegroundColor Red
@@ -381,10 +381,10 @@ function downloadAgent2 {
     }
     elseif ($version -eq "6.4") {
         if ($architecture -eq "AMD64") {
-            $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.16/zabbix_agent2-6.4.16-windows-amd64-static.zip"
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.16/zabbix_agent2-6.4.16-windows-amd64-static.zip"
         }
         elseif ($architecture -eq "x86") {
-            $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.16/zabbix_agent2-6.4.16-windows-i386-static.zip"
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.16/zabbix_agent2-6.4.16-windows-i386-static.zip"
         }
         else {
             Write-Host "`n[Zabbix Agent 2] Unsupported System Architecture. Terminating execution in 5 seconds.`n" -ForegroundColor Red
@@ -405,7 +405,7 @@ function downloadAgent2 {
     if (Test-Path -Path "C:\zabbix_agent2.log") {
         Remove-Item "C:\zabbix_agent2.log" -Force
     }
-    Invoke-WebRequest -Uri $zipUrl -OutFile "$env:TEMP\zabbix_agent2.zip"
+    Invoke-WebRequest -Uri $agentUrl -OutFile "$env:TEMP\zabbix_agent2.zip"
     Start-Sleep -Seconds 3
     if (!(Test-Path -Path "$env:TEMP\zabbix_agent2.zip")) {
         Write-Host "`n[Zabbix Agent 2] Download failed. Terminating execution in 5 seconds.`n" -ForegroundColor Red
