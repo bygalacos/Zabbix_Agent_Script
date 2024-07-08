@@ -284,10 +284,10 @@ function downloadAgent {
     }
     elseif ($version -eq "6.4") {
         if ($architecture -eq "AMD64") {
-            $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.14/zabbix_agent-6.4.14-windows-amd64.zip"
+            $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.16/zabbix_agent-6.4.16-windows-amd64.zip"
         }
         elseif ($architecture -eq "x86") {
-            $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.14/zabbix_agent-6.4.14-windows-i386.zip"
+            $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.16/zabbix_agent-6.4.16-windows-i386.zip"
         }
         else {
             Write-Host "`n[Zabbix Agent] Unsupported System Architecture. Terminating execution in 5 seconds.`n" -ForegroundColor Red
@@ -381,10 +381,10 @@ function downloadAgent2 {
     }
     elseif ($version -eq "6.4") {
         if ($architecture -eq "AMD64") {
-            $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.14/zabbix_agent2-6.4.14-windows-amd64-static.zip"
+            $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.16/zabbix_agent2-6.4.16-windows-amd64-static.zip"
         }
         elseif ($architecture -eq "x86") {
-            $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.14/zabbix_agent2-6.4.14-windows-i386-static.zip"
+            $zipUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.16/zabbix_agent2-6.4.16-windows-i386-static.zip"
         }
         else {
             Write-Host "`n[Zabbix Agent 2] Unsupported System Architecture. Terminating execution in 5 seconds.`n" -ForegroundColor Red
