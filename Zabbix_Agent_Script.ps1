@@ -33,7 +33,7 @@ if ($psVersion -lt $minimumRequiredVersion) {
     Write-Host "`nThis script requires PowerShell version $minimumRequiredVersion or later.`n" -ForegroundColor Red
     Write-Host "`nPlease upgrade PowerShell and try running the script again.`n" -ForegroundColor Red
     Write-Host "`nTerminating execution in 5 seconds...`n" -ForegroundColor Red
-    Start-Sleep 5
+    Start-Sleep -Seconds 5
     exit 1
 }
 
@@ -115,7 +115,7 @@ $oldconfHostname
         Write-Host "`n[Zabbix Agent] Already running, uninstalling...`n"
         Start-Sleep -Seconds 1
         & $pathZabbixExe --config $pathZabbixFolder\conf\zabbix_agentd.conf --stop
-        Start-Sleep -Seconds 1
+        Start-Sleep -Seconds 3
         & $pathZabbixExe --config $pathZabbixFolder\conf\zabbix_agentd.conf --uninstall
         Start-Sleep -Seconds 3
         Remove-Item $pathZabbixFolder -Force -Recurse
@@ -184,7 +184,7 @@ $oldconfHostname
         Write-Host "`n[Zabbix Agent 2] Already running, uninstalling...`n"
         Start-Sleep -Seconds 1
         & $pathZabbixExe --config $pathZabbixFolder\conf\zabbix_agent2.conf --stop
-        Start-Sleep -Seconds 1
+        Start-Sleep -Seconds 3
         & $pathZabbixExe --config $pathZabbixFolder\conf\zabbix_agent2.conf --uninstall
         Start-Sleep -Seconds 3
         Remove-Item $pathZabbixFolder -Force -Recurse
@@ -241,7 +241,7 @@ function downloadAgent {
         }
         else {
             Write-Host "`n[Zabbix Agent] Unsupported System Architecture. Terminating execution in 5 seconds.`n" -ForegroundColor Red
-            Start-Sleep 5
+            Start-Sleep -Seconds 5
             exit 1
         }
     }
@@ -254,7 +254,7 @@ function downloadAgent {
         }
         else {
             Write-Host "`n[Zabbix Agent] Unsupported System Architecture. Terminating execution in 5 seconds.`n" -ForegroundColor Red
-            Start-Sleep 5
+            Start-Sleep -Seconds 5
             exit 1
         }
     }
@@ -267,13 +267,13 @@ function downloadAgent {
         }
         else {
             Write-Host "`n[Zabbix Agent] Unsupported System Architecture. Terminating execution in 5 seconds.`n" -ForegroundColor Red
-            Start-Sleep 5
+            Start-Sleep -Seconds 5
             exit 1
         }
     }
     else {
         Write-Host "`n[Zabbix Agent] Unsupported Version. Terminating execution in 5 seconds.`n" -ForegroundColor Red
-        Start-Sleep 5
+        Start-Sleep -Seconds 5
         exit 1
     }
 
@@ -288,20 +288,22 @@ function downloadAgent {
     Start-Sleep -Seconds 3
     if (!(Test-Path -Path "$env:TEMP\zabbix_agent.zip")) {
         Write-Host "`n[Zabbix Agent] Download failed. Terminating execution in 5 seconds.`n" -ForegroundColor Red
-        Start-Sleep 5
+        Start-Sleep -Seconds 5
         exit 1
     }
     if (Get-Command Expand-Archive -ErrorAction SilentlyContinue) {
         Expand-Archive -Path "$env:TEMP\zabbix_agent.zip" -DestinationPath "$extractPath"
+        Start-Sleep -Seconds 3
     }
     else {
         Add-Type -AssemblyName System.IO.Compression.FileSystem
         [System.IO.Compression.ZipFile]::ExtractToDirectory("$env:TEMP\zabbix_agent.zip", "$extractPath")
+        Start-Sleep -Seconds 3
     }
     Remove-Item "$env:TEMP\zabbix_agent.zip" -Force
     if (!(Test-Path -Path $extractPath)) {
         Write-Host "`n[Zabbix Agent] Installation failed. Terminating execution in 5 seconds.`n" -ForegroundColor Red
-        Start-Sleep 5
+        Start-Sleep -Seconds 5
         exit 1
     }
     Write-Host "`n[Zabbix Agent] Files copied successfully.`n" -ForegroundColor Green
@@ -339,7 +341,7 @@ function downloadAgent2 {
         }
         else {
             Write-Host "`n[Zabbix Agent 2] Unsupported System Architecture. Terminating execution in 5 seconds.`n" -ForegroundColor Red
-            Start-Sleep 5
+            Start-Sleep -Seconds 5
             exit 1
         }
     }
@@ -353,7 +355,7 @@ function downloadAgent2 {
         }
         else {
             Write-Host "`n[Zabbix Agent 2] Unsupported System Architecture. Terminating execution in 5 seconds.`n" -ForegroundColor Red
-            Start-Sleep 5
+            Start-Sleep -Seconds 5
             exit 1
         }
     }
@@ -367,13 +369,13 @@ function downloadAgent2 {
         }
         else {
             Write-Host "`n[Zabbix Agent 2] Unsupported System Architecture. Terminating execution in 5 seconds.`n" -ForegroundColor Red
-            Start-Sleep 5
+            Start-Sleep -Seconds 5
             exit 1
         }
     }
     else {
         Write-Host "`n[Zabbix Agent 2] Unsupported Version. Terminating execution in 5 seconds.`n" -ForegroundColor Red
-        Start-Sleep 5
+        Start-Sleep -Seconds 5
         exit 1
     }
 
@@ -388,20 +390,22 @@ function downloadAgent2 {
     Start-Sleep -Seconds 3
     if (!(Test-Path -Path "$env:TEMP\zabbix_agent2.zip")) {
         Write-Host "`n[Zabbix Agent 2] Download failed. Terminating execution in 5 seconds.`n" -ForegroundColor Red
-        Start-Sleep 5
+        Start-Sleep -Seconds 5
         exit 1
     }
     if (Get-Command Expand-Archive -ErrorAction SilentlyContinue) {
         Expand-Archive -Path "$env:TEMP\zabbix_agent2.zip" -DestinationPath "$extractPath"
+        Start-Sleep -Seconds 3
     }
     else {
         Add-Type -AssemblyName System.IO.Compression.FileSystem
         [System.IO.Compression.ZipFile]::ExtractToDirectory("$env:TEMP\zabbix_agent2.zip", "$extractPath")
+        Start-Sleep -Seconds 3
     }
     Remove-Item "$env:TEMP\zabbix_agent2.zip" -Force
     if (!(Test-Path -Path $extractPath)) {
         Write-Host "`n[Zabbix Agent 2] Installation failed. Terminating execution in 5 seconds.`n" -ForegroundColor Red
-        Start-Sleep 5
+        Start-Sleep -Seconds 5
         exit 1
     }
     # Download plugins if $pluginUrl is not null
@@ -414,20 +418,26 @@ function downloadAgent2 {
         Start-Sleep -Seconds 3
         if (!(Test-Path -Path "$env:TEMP\zabbix_agent2_plugin.zip")) {
             Write-Host "`n[Zabbix Agent 2] Download plugins failed. Terminating execution in 5 seconds.`n" -ForegroundColor Red
-            Start-Sleep 5
+            Start-Sleep -Seconds 5
             exit 1
         }
         if (Get-Command Expand-Archive -ErrorAction SilentlyContinue) {
             Expand-Archive -Path "$env:TEMP\zabbix_agent2_plugin.zip" -DestinationPath "$pluginPath"
+            Start-Sleep -Seconds 3
         }
         else {
             Add-Type -AssemblyName System.IO.Compression.FileSystem
             [System.IO.Compression.ZipFile]::ExtractToDirectory("$env:TEMP\zabbix_agent2_plugin.zip", "$pluginPath")
+            Start-Sleep -Seconds 3
         }
         Remove-Item "$env:TEMP\zabbix_agent2_plugin.zip" -Force
+        Start-Sleep -Seconds 1
         Move-Item -Path "C:\zabbix_agent2_plugin\zabbix_agent2_plugins-*\plugins\*" -Destination "C:\zabbix_agent2\bin\"
+        Start-Sleep -Seconds 3
         Move-Item -Path "C:\zabbix_agent2_plugin\zabbix_agent2_plugins-*\conf\*" -Destination "C:\zabbix_agent2\conf\zabbix_agent2.d\plugins.d\"
+        Start-Sleep -Seconds 1
         Remove-Item -Path $pluginPath -Force -Recurse
+        Start-Sleep -Seconds 1
         # Add Post-Installation check for plugins
     }
     Write-Host "`n[Zabbix Agent 2] Files installed successfully.`n" -ForegroundColor Green
@@ -564,7 +574,7 @@ function hotUpdate {
         Write-Host "`n[Zabbix Agent] Already running, uninstalling...`n"
         Start-Sleep -Seconds 1
         & $pathZabbixExe --config $pathZabbixFolder\conf\zabbix_agentd.conf --stop
-        Start-Sleep -Seconds 1
+        Start-Sleep -Seconds 3
         if (Test-Path -Path "$pathZabbixFolder\conf\zabbix_agentd.conf") {
             Copy-Item -Path "$pathZabbixFolder\conf\zabbix_agentd.conf" -Destination "$env:TEMP"
             Write-Host "`n[Zabbix Agent] Config saved.`n"
@@ -631,7 +641,7 @@ function hotUpdate2 {
         Write-Host "`n[Zabbix Agent 2] Already running, uninstalling...`n"
         Start-Sleep -Seconds 1
         & $pathZabbixExe --config $pathZabbixFolder\conf\zabbix_agent2.conf --stop
-        Start-Sleep -Seconds 1
+        Start-Sleep -Seconds 3
         if (Test-Path -Path "$pathZabbixFolder\conf\zabbix_agent2.conf") {
             Copy-Item -Path "$pathZabbixFolder\conf\zabbix_agent2.conf" -Destination "$env:TEMP"
             Write-Host "`n[Zabbix Agent 2] Config saved.`n"
@@ -701,10 +711,10 @@ function scriptCleanup {
     Write-Host "`n[Zabbix Agent] Installation script leftovers removed successfully.`n" -ForegroundColor Green
     Write-Host "`nMade with ♥ by bygalacos`n" -ForegroundColor Yellow
     Write-Host "`nhttps://github.com/bygalacos`n" -ForegroundColor Yellow
-    Start-Sleep 3
+    Start-Sleep -Seconds 3
     Write-Host "`n!!!WARNING!!!`n" -ForegroundColor Red
     Write-Host "`nThis session will self destruct in 5 seconds...`n" -ForegroundColor Red
-    Start-Sleep 5
+    Start-Sleep -Seconds 5
 }
 
 function zabbixAgent {
@@ -788,11 +798,11 @@ function scriptMenu {
 		$invalidSelections++
 		if ($invalidSelections -eq 3) {
 			Write-Host "[Zabbix Agent] installation script exceeded maximum allowed failed attempts. Terminating script in 5 seconds." -ForegroundColor Red
-			Start-Sleep 5
+			Start-Sleep -Seconds 5
 			exit 1
 		}
         Write-Host "`n[Zabbix Agent] installation script failed due to invalid selection. Redirecting to main menu in 3 seconds.`n" -ForegroundColor Red
-        Start-Sleep 3
+        Start-Sleep -Seconds 3
         scriptMenu
     }
 }
