@@ -16,16 +16,6 @@ param (
 
 Clear-Host
 
-$validArguments = @("-agent", "-version", "-ip", "-hostname", "-saveConfig", "-help")
-$unexpectedArguments = $args | Where-Object { $_ -notin $validArguments }
-if ($unexpectedArguments.Count -gt 0) {
-    Write-Host "Usage: script.ps1 -agent <1 or 2 12 or 21> -version <6.0 or 6.2 or 6.4> -ip <IP_Address> -hostname <HostName> -saveConfig <Optional & Requires Only -agent and -version>"
-    Write-Host "Usage: script.ps1 -help <Detailed command explanations>"
-    Write-Host "Error: Unexpected argument(s): $($unexpectedArguments -join ', ')" -ForegroundColor Red
-    Write-Host "`nTerminating execution.`n" -ForegroundColor Red
-    exit 1
-}
-
 # Check Required PowerShell Version
 $minimumRequiredVersion = [Version]"3.0"
 $psVersion = $PSVersionTable.PSVersion
@@ -34,6 +24,17 @@ if ($psVersion -lt $minimumRequiredVersion) {
     Write-Host "`nPlease upgrade PowerShell and try running the script again.`n" -ForegroundColor Red
     Write-Host "`nTerminating execution in 5 seconds...`n" -ForegroundColor Red
     Start-Sleep -Seconds 5
+    exit 1
+}
+
+# Check Provided Arguments
+$validArguments = @("-agent", "-version", "-ip", "-hostname", "-saveConfig", "-help")
+$unexpectedArguments = $args | Where-Object { $_ -notin $validArguments }
+if ($unexpectedArguments.Count -gt 0) {
+    Write-Host "Usage: script.ps1 -agent <1 or 2 12 or 21> -version <6.0 or 6.2 or 6.4> -ip <IP_Address> -hostname <HostName> -saveConfig <Optional & Requires Only -agent and -version>"
+    Write-Host "Usage: script.ps1 -help <Detailed command explanations>"
+    Write-Host "Error: Unexpected argument(s): $($unexpectedArguments -join ', ')" -ForegroundColor Red
+    Write-Host "`nTerminating execution.`n" -ForegroundColor Red
     exit 1
 }
 
@@ -287,6 +288,7 @@ function downloadAgent {
     if (Test-Path -Path "C:\zabbix_agentd.log") {
         Remove-Item "C:\zabbix_agentd.log" -Force
     }
+    Write-Host "`n[Zabbix Agent] Downloading...`n"
     Invoke-WebRequest -Uri $agentUrl -OutFile "$envTEMP\zabbix_agent.zip"
     Start-Sleep -Seconds 3
     if (!(Test-Path -Path "$envTEMP\zabbix_agent.zip")) {
@@ -389,6 +391,7 @@ function downloadAgent2 {
     if (Test-Path -Path "C:\zabbix_agent2.log") {
         Remove-Item "C:\zabbix_agent2.log" -Force
     }
+    Write-Host "`n[Zabbix Agent 2] Downloading...`n"
     Invoke-WebRequest -Uri $agentUrl -OutFile "$envTEMP\zabbix_agent2.zip"
     Start-Sleep -Seconds 3
     if (!(Test-Path -Path "$envTEMP\zabbix_agent2.zip")) {
@@ -417,6 +420,7 @@ function downloadAgent2 {
             Remove-Item "C:\zabbix_agent2_plugin" -Force -Recurse
         }
         $pluginPath = "C:\zabbix_agent2_plugin"
+        Write-Host "`n[Zabbix Agent 2] Downloading Plugins...`n"
         Invoke-WebRequest -Uri $pluginUrl -OutFile "$envTEMP\zabbix_agent2_plugin.zip"
         Start-Sleep -Seconds 3
         if (!(Test-Path -Path "$envTEMP\zabbix_agent2_plugin.zip")) {
@@ -441,7 +445,7 @@ function downloadAgent2 {
         Start-Sleep -Seconds 1
         Remove-Item -Path $pluginPath -Force -Recurse
         Start-Sleep -Seconds 1
-        # Add Post-Installation check for plugins
+        # TODO - Add Post-Installation check for plugins
     }
     Write-Host "`n[Zabbix Agent 2] Files installed successfully.`n" -ForegroundColor Green
 }
