@@ -56,6 +56,9 @@ else {
     Write-Host "`nAdministrator Privileges granted, continuing...`n" -ForegroundColor Green
 }
 
+# Bug Fix https://github.com/PowerShell/PowerShell/issues/17359
+$envTEMP = (Get-Item -LiteralPath $env:TEMP).FullName
+
 function help {
     Clear-Host
     Write-Host "`nUsage: script.ps1 -agent <1 or 2 12 or 21> -version <6.0 or 6.2 or 6.4> -ip <IP_Address> -hostname <HostName> -saveConfig <Optional & Requires -agent and -version>`n" -ForegroundColor Yellow
@@ -92,8 +95,8 @@ function checkAgent {
                     Start-Sleep -Seconds 5
                     exit 1
                 }
-                if (Test-Path -Path "$env:TEMP\oldconf.txt") {
-                    Remove-Item -Path "$env:TEMP\oldconf.txt" -Force
+                if (Test-Path -Path "$envTEMP\oldconf.txt") {
+                    Remove-Item -Path "$envTEMP\oldconf.txt" -Force
                     Start-Sleep -Seconds 1
                 }
                 # Save old configuration values to a file
@@ -101,7 +104,7 @@ function checkAgent {
 $oldconfServer
 $oldconfServerActive
 $oldconfHostname
-"@ | Set-Content -Path "$env:TEMP\oldconf.txt" -Force
+"@ | Set-Content -Path "$envTEMP\oldconf.txt" -Force
                 Write-Host "`n[Zabbix Agent] Configuration saved successfully. Server: $oldconfServer & ServerActive: $oldconfServerActive & Hostname: $oldconfHostname`n" -ForegroundColor Yellow
                 Start-Sleep -Seconds 1
             }
@@ -161,8 +164,8 @@ function checkAgent2 {
                     Start-Sleep -Seconds 5
                     exit 1
                 }
-                if (Test-Path -Path "$env:TEMP\oldconf.txt") {
-                    Remove-Item -Path "$env:TEMP\oldconf.txt" -Force
+                if (Test-Path -Path "$envTEMP\oldconf.txt") {
+                    Remove-Item -Path "$envTEMP\oldconf.txt" -Force
                     Start-Sleep -Seconds 1
                 }
                 # Save old configuration values to a file
@@ -170,7 +173,7 @@ function checkAgent2 {
 $oldconfServer
 $oldconfServerActive
 $oldconfHostname
-"@ | Set-Content -Path "$env:TEMP\oldconf.txt" -Force
+"@ | Set-Content -Path "$envTEMP\oldconf.txt" -Force
                 Write-Host "`n[Zabbix Agent 2] Configuration saved successfully. Server: $oldconfServer & ServerActive: $oldconfServerActive & Hostname: $oldconfHostname`n" -ForegroundColor Yellow
                 Start-Sleep -Seconds 1
             }
@@ -284,23 +287,23 @@ function downloadAgent {
     if (Test-Path -Path "C:\zabbix_agentd.log") {
         Remove-Item "C:\zabbix_agentd.log" -Force
     }
-    Invoke-WebRequest -Uri $agentUrl -OutFile "$env:TEMP\zabbix_agent.zip"
+    Invoke-WebRequest -Uri $agentUrl -OutFile "$envTEMP\zabbix_agent.zip"
     Start-Sleep -Seconds 3
-    if (!(Test-Path -Path "$env:TEMP\zabbix_agent.zip")) {
+    if (!(Test-Path -Path "$envTEMP\zabbix_agent.zip")) {
         Write-Host "`n[Zabbix Agent] Download failed. Terminating execution in 5 seconds.`n" -ForegroundColor Red
         Start-Sleep -Seconds 5
         exit 1
     }
     if (Get-Command Expand-Archive -ErrorAction SilentlyContinue) {
-        Expand-Archive -Path "$env:TEMP\zabbix_agent.zip" -DestinationPath "$extractPath"
+        Expand-Archive -Path "$envTEMP\zabbix_agent.zip" -DestinationPath "$extractPath"
         Start-Sleep -Seconds 3
     }
     else {
         Add-Type -AssemblyName System.IO.Compression.FileSystem
-        [System.IO.Compression.ZipFile]::ExtractToDirectory("$env:TEMP\zabbix_agent.zip", "$extractPath")
+        [System.IO.Compression.ZipFile]::ExtractToDirectory("$envTEMP\zabbix_agent.zip", "$extractPath")
         Start-Sleep -Seconds 3
     }
-    Remove-Item "$env:TEMP\zabbix_agent.zip" -Force
+    Remove-Item "$envTEMP\zabbix_agent.zip" -Force
     if (!(Test-Path -Path $extractPath)) {
         Write-Host "`n[Zabbix Agent] Installation failed. Terminating execution in 5 seconds.`n" -ForegroundColor Red
         Start-Sleep -Seconds 5
@@ -386,23 +389,23 @@ function downloadAgent2 {
     if (Test-Path -Path "C:\zabbix_agent2.log") {
         Remove-Item "C:\zabbix_agent2.log" -Force
     }
-    Invoke-WebRequest -Uri $agentUrl -OutFile "$env:TEMP\zabbix_agent2.zip"
+    Invoke-WebRequest -Uri $agentUrl -OutFile "$envTEMP\zabbix_agent2.zip"
     Start-Sleep -Seconds 3
-    if (!(Test-Path -Path "$env:TEMP\zabbix_agent2.zip")) {
+    if (!(Test-Path -Path "$envTEMP\zabbix_agent2.zip")) {
         Write-Host "`n[Zabbix Agent 2] Download failed. Terminating execution in 5 seconds.`n" -ForegroundColor Red
         Start-Sleep -Seconds 5
         exit 1
     }
     if (Get-Command Expand-Archive -ErrorAction SilentlyContinue) {
-        Expand-Archive -Path "$env:TEMP\zabbix_agent2.zip" -DestinationPath "$extractPath"
+        Expand-Archive -Path "$envTEMP\zabbix_agent2.zip" -DestinationPath "$extractPath"
         Start-Sleep -Seconds 3
     }
     else {
         Add-Type -AssemblyName System.IO.Compression.FileSystem
-        [System.IO.Compression.ZipFile]::ExtractToDirectory("$env:TEMP\zabbix_agent2.zip", "$extractPath")
+        [System.IO.Compression.ZipFile]::ExtractToDirectory("$envTEMP\zabbix_agent2.zip", "$extractPath")
         Start-Sleep -Seconds 3
     }
-    Remove-Item "$env:TEMP\zabbix_agent2.zip" -Force
+    Remove-Item "$envTEMP\zabbix_agent2.zip" -Force
     if (!(Test-Path -Path $extractPath)) {
         Write-Host "`n[Zabbix Agent 2] Installation failed. Terminating execution in 5 seconds.`n" -ForegroundColor Red
         Start-Sleep -Seconds 5
@@ -414,23 +417,23 @@ function downloadAgent2 {
             Remove-Item "C:\zabbix_agent2_plugin" -Force -Recurse
         }
         $pluginPath = "C:\zabbix_agent2_plugin"
-        Invoke-WebRequest -Uri $pluginUrl -OutFile "$env:TEMP\zabbix_agent2_plugin.zip"
+        Invoke-WebRequest -Uri $pluginUrl -OutFile "$envTEMP\zabbix_agent2_plugin.zip"
         Start-Sleep -Seconds 3
-        if (!(Test-Path -Path "$env:TEMP\zabbix_agent2_plugin.zip")) {
+        if (!(Test-Path -Path "$envTEMP\zabbix_agent2_plugin.zip")) {
             Write-Host "`n[Zabbix Agent 2] Download plugins failed. Terminating execution in 5 seconds.`n" -ForegroundColor Red
             Start-Sleep -Seconds 5
             exit 1
         }
         if (Get-Command Expand-Archive -ErrorAction SilentlyContinue) {
-            Expand-Archive -Path "$env:TEMP\zabbix_agent2_plugin.zip" -DestinationPath "$pluginPath"
+            Expand-Archive -Path "$envTEMP\zabbix_agent2_plugin.zip" -DestinationPath "$pluginPath"
             Start-Sleep -Seconds 3
         }
         else {
             Add-Type -AssemblyName System.IO.Compression.FileSystem
-            [System.IO.Compression.ZipFile]::ExtractToDirectory("$env:TEMP\zabbix_agent2_plugin.zip", "$pluginPath")
+            [System.IO.Compression.ZipFile]::ExtractToDirectory("$envTEMP\zabbix_agent2_plugin.zip", "$pluginPath")
             Start-Sleep -Seconds 3
         }
-        Remove-Item "$env:TEMP\zabbix_agent2_plugin.zip" -Force
+        Remove-Item "$envTEMP\zabbix_agent2_plugin.zip" -Force
         Start-Sleep -Seconds 1
         Move-Item -Path "C:\zabbix_agent2_plugin\zabbix_agent2_plugins-*\plugins\*" -Destination "C:\zabbix_agent2\bin\"
         Start-Sleep -Seconds 3
@@ -447,12 +450,12 @@ function setRunAgent {
     # Set Variables
     $confFile = "C:\zabbix_agent\conf\zabbix_agentd.conf"
 
-    if (Test-Path -Path "$env:TEMP\oldconf.txt") {
-        $oldconfValues = Get-Content -Path "$env:TEMP\oldconf.txt"
+    if (Test-Path -Path "$envTEMP\oldconf.txt") {
+        $oldconfValues = Get-Content -Path "$envTEMP\oldconf.txt"
         $oldconfServer = $oldconfValues[0]
         $oldconfServerActive = $oldconfValues[1]
         $oldconfHostname = $oldconfValues[2]
-        Remove-Item -Path "$env:TEMP\oldconf.txt" -Force
+        Remove-Item -Path "$envTEMP\oldconf.txt" -Force
 
         Write-Host "`n[Zabbix Agent] Using saved agent configuration file. Server: $oldconfServer & ServerActive: $oldconfServerActive & Hostname: $oldconfHostname`n" -ForegroundColor Yellow
         Start-Sleep -Seconds 3
@@ -505,12 +508,12 @@ function setRunAgent2 {
     $postgresqlPluginExe = "C:\zabbix_agent2\bin\zabbix-agent2-plugin-postgresql.exe"
     $postgresqlPluginConf ="C:\zabbix_agent2\conf\zabbix_agent2.d\plugins.d\postgresql.conf"
 
-    if (Test-Path -Path "$env:TEMP\oldconf.txt") {
-        $oldconfValues = Get-Content -Path "$env:TEMP\oldconf.txt"
+    if (Test-Path -Path "$envTEMP\oldconf.txt") {
+        $oldconfValues = Get-Content -Path "$envTEMP\oldconf.txt"
         $oldconfServer = $oldconfValues[0]
         $oldconfServerActive = $oldconfValues[1]
         $oldconfHostname = $oldconfValues[2]
-        Remove-Item -Path "$env:TEMP\oldconf.txt" -Force
+        Remove-Item -Path "$envTEMP\oldconf.txt" -Force
 
         Write-Host "`n[Zabbix Agent 2] Using saved agent configuration file. Server: $oldconfServer & ServerActive: $oldconfServerActive & Hostname: $oldconfHostname`n" -ForegroundColor Yellow
         Start-Sleep -Seconds 3
@@ -576,7 +579,7 @@ function hotUpdate {
         & $pathZabbixExe --config $pathZabbixFolder\conf\zabbix_agentd.conf --stop
         Start-Sleep -Seconds 3
         if (Test-Path -Path "$pathZabbixFolder\conf\zabbix_agentd.conf") {
-            Copy-Item -Path "$pathZabbixFolder\conf\zabbix_agentd.conf" -Destination "$env:TEMP"
+            Copy-Item -Path "$pathZabbixFolder\conf\zabbix_agentd.conf" -Destination "$envTEMP"
             Write-Host "`n[Zabbix Agent] Config saved.`n"
         }
         else {
@@ -608,9 +611,9 @@ function hotUpdate {
 
     downloadAgent
 
-    if (Test-Path -Path "$env:TEMP\zabbix_agentd.conf") {
+    if (Test-Path -Path "$envTEMP\zabbix_agentd.conf") {
         Remove-Item "C:\zabbix_agent\conf\zabbix_agentd.conf" -Force
-        Move-Item -Path "$env:TEMP\zabbix_agentd.conf" -Destination "C:\zabbix_agent\conf\zabbix_agentd.conf"
+        Move-Item -Path "$envTEMP\zabbix_agentd.conf" -Destination "C:\zabbix_agent\conf\zabbix_agentd.conf"
         Write-Host "`n[Zabbix Agent] Config restored.`n"
     }
     else {
@@ -643,7 +646,7 @@ function hotUpdate2 {
         & $pathZabbixExe --config $pathZabbixFolder\conf\zabbix_agent2.conf --stop
         Start-Sleep -Seconds 3
         if (Test-Path -Path "$pathZabbixFolder\conf\zabbix_agent2.conf") {
-            Copy-Item -Path "$pathZabbixFolder\conf\zabbix_agent2.conf" -Destination "$env:TEMP"
+            Copy-Item -Path "$pathZabbixFolder\conf\zabbix_agent2.conf" -Destination "$envTEMP"
             Write-Host "`n[Zabbix Agent 2] Config saved.`n"
         }
         else {
@@ -681,9 +684,9 @@ function hotUpdate2 {
 
     downloadAgent2
 
-    if (Test-Path -Path "$env:TEMP\zabbix_agent2.conf") {
+    if (Test-Path -Path "$envTEMP\zabbix_agent2.conf") {
         Remove-Item "C:\zabbix_agent2\conf\zabbix_agent2.conf" -Force
-        Move-Item -Path "$env:TEMP\zabbix_agent2.conf" -Destination "C:\zabbix_agent2\conf\zabbix_agent2.conf"
+        Move-Item -Path "$envTEMP\zabbix_agent2.conf" -Destination "C:\zabbix_agent2\conf\zabbix_agent2.conf"
         Write-Host "`n[Zabbix Agent] Config restored.`n"
     }
     else {
