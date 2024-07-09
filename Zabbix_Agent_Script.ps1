@@ -86,20 +86,8 @@ function checkAgent {
                 $oldconfHostname = (Select-String -Path $oldconf -Pattern "^Hostname=(.+)" -CaseSensitive).Matches.Groups[1].Value.Trim()
                 Start-Sleep -Seconds 1
                 # Check missing configuration details
-                if (-not $oldconfServer) {
-                    Write-Host "`n[Zabbix Agent] Unable to find Server parameter in the configuration file. Saving failed. Try running without -saveConfig parameter.`n" -ForegroundColor Red
-                    Write-Host "`nTerminating execution in 5 seconds.`n"
-                    Start-Sleep -Seconds 5
-                    exit 1
-                }
-                if (-not $oldconfServerActive) {
-                    Write-Host "`n[Zabbix Agent] Unable to find ServerActive parameter in the configuration file. Saving failed. Try running without -saveConfig parameter.`n" -ForegroundColor Red
-                    Write-Host "`nTerminating execution in 5 seconds.`n"
-                    Start-Sleep -Seconds 5
-                    exit 1
-                }
-                if (-not $oldconfHostname) {
-                    Write-Host "`n[Zabbix Agent] Unable to find Hostname parameter in the configuration file. Saving failed. Try running without -saveConfig parameter.`n" -ForegroundColor Red
+                if ((-not $oldconfServer) -or (-not $oldconfServerActive) -or (-not $oldconfHostname)) {
+                    Write-Host "`n[Zabbix Agent 2] Unable to find parameter(s) in the configuration file. Saving failed. Try running without -saveConfig parameter.`n" -ForegroundColor Red
                     Write-Host "`nTerminating execution in 5 seconds.`n"
                     Start-Sleep -Seconds 5
                     exit 1
@@ -167,20 +155,8 @@ function checkAgent2 {
                 $oldconfHostname = (Select-String -Path $oldconf -Pattern "^Hostname=(.+)" -CaseSensitive).Matches.Groups[1].Value.Trim()
                 Start-Sleep -Seconds 1
                 # Check missing configuration details
-                if (-not $oldconfServer) {
-                    Write-Host "`n[Zabbix Agent 2] Unable to find Server parameter in the configuration file. Saving failed. Try running without -saveConfig parameter.`n" -ForegroundColor Red
-                    Write-Host "`nTerminating execution in 5 seconds.`n"
-                    Start-Sleep -Seconds 5
-                    exit 1
-                }
-                if (-not $oldconfServerActive) {
-                    Write-Host "`n[Zabbix Agent 2] Unable to find ServerActive parameter in the configuration file. Saving failed. Try running without -saveConfig parameter.`n" -ForegroundColor Red
-                    Write-Host "`nTerminating execution in 5 seconds.`n"
-                    Start-Sleep -Seconds 5
-                    exit 1
-                }
-                if (-not $oldconfHostname) {
-                    Write-Host "`n[Zabbix Agent 2] Unable to find Hostname parameter in the configuration file. Saving failed. Try running without -saveConfig parameter.`n" -ForegroundColor Red
+                if ((-not $oldconfServer) -or (-not $oldconfServerActive) -or (-not $oldconfHostname)) {
+                    Write-Host "`n[Zabbix Agent 2] Unable to find parameter(s) in the configuration file. Saving failed. Try running without -saveConfig parameter.`n" -ForegroundColor Red
                     Write-Host "`nTerminating execution in 5 seconds.`n"
                     Start-Sleep -Seconds 5
                     exit 1
@@ -323,7 +299,7 @@ function downloadAgent {
         [System.IO.Compression.ZipFile]::ExtractToDirectory("$env:TEMP\zabbix_agent.zip", "$extractPath")
     }
     Remove-Item "$env:TEMP\zabbix_agent.zip" -Force
-    if (!(Test-Path -Path "C:\zabbix_agent")) {
+    if (!(Test-Path -Path $extractPath)) {
         Write-Host "`n[Zabbix Agent] Installation failed. Terminating execution in 5 seconds.`n" -ForegroundColor Red
         Start-Sleep 5
         exit 1
@@ -356,6 +332,7 @@ function downloadAgent2 {
     if ($version -eq "6.0") {
         if ($architecture -eq "AMD64") {
             $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.29/zabbix_agent2-6.0.29-windows-amd64-static.zip"
+            $pluginUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.29/zabbix_agent2_plugins-6.0.29-windows-amd64.zip"
         }
         elseif ($architecture -eq "x86") {
             $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.29/zabbix_agent2-6.0.29-windows-i386-static.zip"
@@ -369,6 +346,7 @@ function downloadAgent2 {
     elseif ($version -eq "6.2") {
         if ($architecture -eq "AMD64") {
             $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.2/6.2.9/zabbix_agent2-6.2.9-windows-amd64-static.zip"
+            # N/A for version 6.2 $pluginUrl = ""
         }
         elseif ($architecture -eq "x86") {
             $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.2/6.2.9/zabbix_agent2-6.2.9-windows-i386-static.zip"
@@ -382,6 +360,7 @@ function downloadAgent2 {
     elseif ($version -eq "6.4") {
         if ($architecture -eq "AMD64") {
             $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.16/zabbix_agent2-6.4.16-windows-amd64-static.zip"
+            $pluginUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.16/zabbix_agent2_plugins-6.4.16-windows-amd64.zip"
         }
         elseif ($architecture -eq "x86") {
             $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.16/zabbix_agent2-6.4.16-windows-i386-static.zip"
@@ -420,10 +399,36 @@ function downloadAgent2 {
         [System.IO.Compression.ZipFile]::ExtractToDirectory("$env:TEMP\zabbix_agent2.zip", "$extractPath")
     }
     Remove-Item "$env:TEMP\zabbix_agent2.zip" -Force
-    if (!(Test-Path -Path "C:\zabbix_agent2")) {
+    if (!(Test-Path -Path $extractPath)) {
         Write-Host "`n[Zabbix Agent 2] Installation failed. Terminating execution in 5 seconds.`n" -ForegroundColor Red
         Start-Sleep 5
         exit 1
+    }
+    # Download plugins if $pluginUrl is not null
+    if ($pluginUrl) {
+        if (Test-Path -Path "C:\zabbix_agent2_plugin") {
+            Remove-Item "C:\zabbix_agent2_plugin" -Force -Recurse
+        }
+        $pluginPath = "C:\zabbix_agent2_plugin"
+        Invoke-WebRequest -Uri $pluginUrl -OutFile "$env:TEMP\zabbix_agent2_plugin.zip"
+        Start-Sleep -Seconds 3
+        if (!(Test-Path -Path "$env:TEMP\zabbix_agent2_plugin.zip")) {
+            Write-Host "`n[Zabbix Agent 2] Download plugins failed. Terminating execution in 5 seconds.`n" -ForegroundColor Red
+            Start-Sleep 5
+            exit 1
+        }
+        if (Get-Command Expand-Archive -ErrorAction SilentlyContinue) {
+            Expand-Archive -Path "$env:TEMP\zabbix_agent2_plugin.zip" -DestinationPath "$pluginPath"
+        }
+        else {
+            Add-Type -AssemblyName System.IO.Compression.FileSystem
+            [System.IO.Compression.ZipFile]::ExtractToDirectory("$env:TEMP\zabbix_agent2_plugin.zip", "$pluginPath")
+        }
+        Remove-Item "$env:TEMP\zabbix_agent2_plugin.zip" -Force
+        Move-Item -Path "C:\zabbix_agent2_plugin\zabbix_agent2_plugins-*\plugins\*" -Destination "C:\zabbix_agent2\bin\"
+        Move-Item -Path "C:\zabbix_agent2_plugin\zabbix_agent2_plugins-*\conf\*" -Destination "C:\zabbix_agent2\conf\zabbix_agent2.d\plugins.d\"
+        Remove-Item -Path $pluginPath -Force -Recurse
+        # Add Post-Installation check for plugins
     }
     Write-Host "`n[Zabbix Agent 2] Files installed successfully.`n" -ForegroundColor Green
 }
@@ -481,6 +486,15 @@ function setRunAgent2 {
     # Set Variables
     $confFile = "C:\zabbix_agent2\conf\zabbix_agent2.conf"
 
+    $mongodbPluginExe = "C:\zabbix_agent2\bin\zabbix-agent2-plugin-mongodb.exe"
+    $mongodbPluginConf = "C:\zabbix_agent2\conf\zabbix_agent2.d\plugins.d\mongodb.conf"
+
+    $mssqlPluginExe = "C:\zabbix_agent2\bin\zabbix-agent2-plugin-mssql.exe"
+    $mssqlPluginConf = "C:\zabbix_agent2\conf\zabbix_agent2.d\plugins.d\mssql.conf"
+
+    $postgresqlPluginExe = "C:\zabbix_agent2\bin\zabbix-agent2-plugin-postgresql.exe"
+    $postgresqlPluginConf ="C:\zabbix_agent2\conf\zabbix_agent2.d\plugins.d\postgresql.conf"
+
     if (Test-Path -Path "$env:TEMP\oldconf.txt") {
         $oldconfValues = Get-Content -Path "$env:TEMP\oldconf.txt"
         $oldconfServer = $oldconfValues[0]
@@ -496,6 +510,13 @@ function setRunAgent2 {
         (Get-Content $confFile) -join "`n" -replace "Server=127.0.0.1", "Server=$oldconfServer" | Set-Content $confFile
         (Get-Content $confFile) -join "`n" -replace "ServerActive=127.0.0.1", "ServerActive=$oldconfServerActive" | Set-Content $confFile
         (Get-Content $confFile) -join "`n" -replace "Hostname=Windows host", "Hostname=$oldconfHostname" | Set-Content $confFile
+
+        if ((Test-Path -Path $mongodbPluginExe) -and (Test-Path -Path $mongodbPluginConf) -and (Test-Path -Path $mssqlPluginExe) -and (Test-Path -Path $mssqlPluginConf) -and (Test-Path -Path $postgresqlPluginExe) -and (Test-Path -Path $postgresqlPluginConf)) {
+            (Get-Content $mongodbPluginConf) -join "`n" -replace "# Plugins.MongoDB.System.Path=", "Plugins.MongoDB.System.Path=$mongodbPluginExe" | Set-Content $mongodbPluginConf
+            (Get-Content $mssqlPluginConf) -join "`n" -replace "# Plugins.MSSQL.System.Path=", "Plugins.MSSQL.System.Path=$mssqlPluginExe" | Set-Content $mssqlPluginConf
+            (Get-Content $postgresqlPluginConf) -join "`n" -replace "# Plugins.PostgreSQL.System.Path=", "Plugins.PostgreSQL.System.Path=$postgresqlPluginExe" | Set-Content $postgresqlPluginConf
+            Write-Host "`n[Zabbix Agent 2] Plugins configured.`n" -ForegroundColor Yellow
+        }
     }
     else {
         # Check if the IP and hostname parameters are provided, otherwise, ask the user for input
@@ -514,6 +535,13 @@ function setRunAgent2 {
         (Get-Content $confFile) -join "`n" -replace "Server=127.0.0.1", "Server=$ip" | Set-Content $confFile
         (Get-Content $confFile) -join "`n" -replace "ServerActive=127.0.0.1", "ServerActive=$ip" | Set-Content $confFile
         (Get-Content $confFile) -join "`n" -replace "Hostname=Windows host", "Hostname=$hostname" | Set-Content $confFile
+
+        if ((Test-Path -Path $mongodbPluginExe) -and (Test-Path -Path $mongodbPluginConf) -and (Test-Path -Path $mssqlPluginExe) -and (Test-Path -Path $mssqlPluginConf) -and (Test-Path -Path $postgresqlPluginExe) -and (Test-Path -Path $postgresqlPluginConf)) {
+            (Get-Content $mongodbPluginConf) -join "`n" -replace "# Plugins.MongoDB.System.Path=", "Plugins.MongoDB.System.Path=$mongodbPluginExe" | Set-Content $mongodbPluginConf
+            (Get-Content $mssqlPluginConf) -join "`n" -replace "# Plugins.MSSQL.System.Path=", "Plugins.MSSQL.System.Path=$mssqlPluginExe" | Set-Content $mssqlPluginConf
+            (Get-Content $postgresqlPluginConf) -join "`n" -replace "# Plugins.PostgreSQL.System.Path=", "Plugins.PostgreSQL.System.Path=$postgresqlPluginExe" | Set-Content $postgresqlPluginConf
+            Write-Host "`n[Zabbix Agent 2] Plugins configured.`n" -ForegroundColor Yellow
+        }
     }
     # Install & Run
     Start-Sleep -Seconds 1
