@@ -724,6 +724,85 @@ function scriptCleanup {
     Start-Sleep -Seconds 5
 }
 
+function remoteInstall {
+    Clear-Host
+
+    Write-Host "`n[Remote Execution] This feature is designed to work on machines that have the necessary permissions to execute commands on target hosts, such as a Domain Controller (DC). It has been tested on machines with DC roles using a Domain Admin account.`n" -ForegroundColor Yellow
+    Write-Host "`n[Remote Execution] Please note that this is currently a beta feature. Use with caution and be aware that it may have limitations or issues.`n" -ForegroundColor Yellow
+    
+    # Prompt for user confirmation
+    $acceptRemoteExecution = Read-Host "[Remote Execution] To continue and accept, type 'yes'. To abort, type anything else"
+    if ($acceptRemoteExecution -ne "yes") {
+        Write-Host "[Remote Execution] Execution aborted by user. Redirecting to main menu in 3 seconds." -ForegroundColor Red
+        Start-Sleep -Seconds 3
+        scriptMenu
+        exit
+    }
+
+    # Prompt for the file path containing the server list
+    $executionHostListPath = Read-Host "[Remote Execution] Please insert the path to your host(s) list file"
+    
+    if (-not (Test-Path $executionHostListPath)) {
+        Write-Host "`n[Remote Execution] Unable to find host(s) in specified file. Execution failed.`n" -ForegroundColor Red
+        Write-Host "`nTerminating execution in 5 seconds.`n"
+        Start-Sleep -Seconds 5
+        exit 1
+    }
+    
+    $executionHosts = Get-Content -Path $executionHostListPath
+    $scriptUrl = "https://raw.githubusercontent.com/bygalacos/Zabbix_Agent_Script/main/Zabbix_Agent_Script.ps1"
+    $localScriptPath = "$envTEMP/Zabbix_Agent_Script.ps1"
+    $params = Read-Host "[Remote Execution] Please insert your parameters"
+
+    $executionResults = @()
+
+    $scriptBlock = {
+        param ($scriptUrl, $localScriptPath, $params)
+        try {
+            Clear-Host
+            Start-Sleep -Seconds 1
+            $hostname = hostname.exe
+            Write-Host "`nCurrently running on $hostname`n" -ForegroundColor Green
+            Start-Sleep -Seconds 3
+            Invoke-WebRequest -Uri $scriptUrl -OutFile $localScriptPath
+            Start-Sleep -Seconds 1
+            Invoke-Expression "& $localScriptPath $params"
+            Start-Sleep 3
+            $true # Indicate success
+        } catch {
+            Write-Host "Error: $_" -ForegroundColor Red
+            $false # Indicate failure
+        }
+    }
+
+    foreach ($executionHost in $executionHosts.Trim()) {
+        Clear-Host
+        if ([string]::IsNullOrWhiteSpace($executionHost)) {
+            Write-Host "`n[Remote Execution] Skipping empty server name.`n" -ForegroundColor Red
+            continue
+        }
+        Write-Host "`n[Remote Execution] Connecting to $executionHost...`n" -ForegroundColor Yellow
+        Start-Sleep -Seconds 1
+        $executionStatus = Invoke-Command -ComputerName $executionHost -ScriptBlock $scriptBlock -ArgumentList $scriptUrl, $localScriptPath, $params -ErrorAction SilentlyContinue
+
+        # Collect the result
+        $executionResults += [PSCustomObject]@{
+            Host = $executionHost
+            Status = $executionStatus
+        }
+    }
+
+    Clear-Host
+    Write-Host "`n[Remote Execution] Operation completed.`n" -ForegroundColor Green
+    # Output results
+    Write-Host "`n[Remote Execution] Execution Results:`n"
+    $executionResults | Format-Table -AutoSize
+    Start-Sleep -Seconds 3
+
+    scriptCleanup
+}
+
+
 function zabbixAgent {
     checkAgent
 
@@ -766,7 +845,10 @@ function zabbixAgent21 {
 
 function scriptMenu {
     Clear-Host
-    Write-Host "Welcome to [Zabbix Agent] installation script, Made with ♥ by bygalacos`n" -ForegroundColor Yellow
+    $hostname = hostname.exe
+
+    Write-Host "Welcome to [Zabbix Agent] installation script, Made with ♥ by bygalacos" -ForegroundColor Yellow
+    Write-Host "Currently running on $hostname`n" -ForegroundColor Yellow
     Write-Host "1) Install [Zabbix Agent]`n"
     Write-Host "2) Install [Zabbix Agent 2]`n"
     Write-Host "3) Update [Zabbix Agent 1] to [Zabbix Agent 2]`n"
@@ -774,7 +856,8 @@ function scriptMenu {
     Write-Host "5) Hot-Update [Zabbix Agent]`n"
     Write-Host "6) Hot-Update [Zabbix Agent 2]`n"
     Write-Host "9) Help - Usage Manual`n"
-    Write-Host "`nType [exit] to terminate [Zabbix Agent] installation script"
+    Write-Host "0) Remote Installation`n"
+    Write-Host "`nType 'exit' to terminate [Zabbix Agent] installation script"
 
     $operationSelection = Read-Host "`nPlease Select Your Operation"
     if ($operationSelection -eq 1) {
@@ -797,6 +880,9 @@ function scriptMenu {
     }
     elseif ($operationSelection -eq 9) {
         help
+    }
+    elseif ($operationSelection -eq 0) {
+        remoteInstall
     }
     elseif ($operationSelection -eq "exit") {
         exit 0
