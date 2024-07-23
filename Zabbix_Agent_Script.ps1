@@ -2,7 +2,7 @@
 #  Author:         bygalacos
 #  Github:         github.com/bygalacos
 #  Creation Date:  04.02.2024
-#  Modify Date:    04.07.2024
+#  Modify Date:    23.07.2024
 #  Purpose/Change: Initial script development
 
 param (
@@ -741,14 +741,12 @@ function remoteInstall {
 
     # Prompt for the file path containing the server list
     $executionHostListPath = Read-Host "[Remote Execution] Please insert the path to your host(s) list file"
-    
     if (-not (Test-Path $executionHostListPath)) {
         Write-Host "`n[Remote Execution] Unable to find host(s) in specified file. Execution failed.`n" -ForegroundColor Red
         Write-Host "`nTerminating execution in 5 seconds.`n"
         Start-Sleep -Seconds 5
         exit 1
     }
-    
     $executionHosts = Get-Content -Path $executionHostListPath
     $scriptUrl = "https://raw.githubusercontent.com/bygalacos/Zabbix_Agent_Script/main/Zabbix_Agent_Script.ps1"
     $localScriptPath = "$envTEMP/Zabbix_Agent_Script.ps1"
@@ -801,7 +799,6 @@ function remoteInstall {
 
     scriptCleanup
 }
-
 
 function zabbixAgent {
     checkAgent
