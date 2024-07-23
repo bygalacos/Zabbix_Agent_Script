@@ -7,17 +7,18 @@ Releasing script that installs zabbix agent without any hassle.
 
 ## Features
 
-- Checks if PowerShell version is higher or equal to 3.0 **(Windows Only)**
+- Checks PowerShell version 3.0 or higher **(Windows Only)**
 - Supports Self-Elevation **(Windows Only)**
-- Detects the operating system and any previous Zabbix agent files
-- More user-friendly installation process
-- Added SSL & TLS support for better handling while downloading
-- Supports both x64 and x86 system architectures **(Windows Only)**
-- Prompts for the "Zabbix Server" IP address, or accepts it as a command line argument
-- The hostname can be automatically assigned or specified as a command line argument **(Windows Only)**
+- Detects OS and previous Zabbix agent files
+- User-friendly installation process
+- Added SSL & TLS support for secure downloads
+- Supports x64 and x86 architectures **(Windows Only)**
+- Prompts or accepts "Zabbix Server" IP address as a command line argument
+- Automatic or specified hostname via command line **(Windows Only)**
 - Organizes log files **(Windows Only)**
-- Supports update&upgrade w/o changing config file **(Windows Only)**
-- Now support both Agent & Agent2
+- Update & upgrade without changing config file **(Windows Only)**
+- Supports both Agent & Agent2
+- Remote Script Execution support **(Windows Only)**
 
 To use command line arguments, simply provide the script name and the IP address.
 
