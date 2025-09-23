@@ -46,7 +46,7 @@ Guide for Zabbix_Agent_Script.ps1:
 
 ```sh
 ./Zabbix_Agent_Script.ps1
-./Zabbix_Agent_Script.ps1 -agent <1 or 2 12 or 21> -version <6.0 or 6.2 or 6.4> -ip <IP_Address> -hostname <HostName> -saveConfig <Optional & Requires Only -agent and -version>"
+./Zabbix_Agent_Script.ps1 -agent <1 or 2 12 or 21> -version <6.0 or 6.2 or 6.4 or 7.0 or 7.2 or 7.4> -ip <IP_Address> -hostname <HostName> -saveConfig <Optional & Requires Only -agent and -version>"
 Arguments -agent and -version are mandatory. If -saveConfig is not used, -ip is also mandatory, while -hostname is optional. When -saveConfig is used, only -agent and -version are required, assuming an active configuration file exists.
 ```
 
