@@ -1,4 +1,4 @@
-﻿#  Version:        1.1
+﻿#  Version:        1.1.1
 #  Author:         bygalacos
 #  Github:         github.com/bygalacos
 #  Creation Date:  04.02.2024
@@ -31,7 +31,7 @@ if ($psVersion -lt $minimumRequiredVersion) {
 $validArguments = @("-agent", "-version", "-ip", "-hostname", "-saveConfig", "-help")
 $unexpectedArguments = $args | Where-Object { $_ -notin $validArguments }
 if ($unexpectedArguments.Count -gt 0) {
-    Write-Host "Usage: script.ps1 -agent <1 or 2 12 or 21> -version <6.0 or 6.2 or 6.4> -ip <IP_Address> -hostname <HostName> -saveConfig <Optional & Requires Only -agent and -version>"
+    Write-Host "Usage: script.ps1 -agent <1 or 2 12 or 21> -version <6.0 or 6.2 or 6.4 or 7.0 or 7.2 or 7.4> -ip <IP_Address> -hostname <HostName> -saveConfig <Optional & Requires Only -agent and -version>"
     Write-Host "Usage: script.ps1 -help <Detailed command explanations>"
     Write-Host "Error: Unexpected argument(s): $($unexpectedArguments -join ', ')" -ForegroundColor Red
     Write-Host "`nTerminating execution.`n" -ForegroundColor Red
@@ -62,7 +62,7 @@ $envTEMP = (Get-Item -LiteralPath $env:TEMP).FullName
 
 function help {
     Clear-Host
-    Write-Host "`nUsage: script.ps1 -agent <1 or 2 12 or 21> -version <6.0 or 6.2 or 6.4> -ip <IP_Address> -hostname <HostName> -saveConfig <Optional & Requires -agent and -version>`n" -ForegroundColor Yellow
+    Write-Host "`nUsage: script.ps1 -agent <1 or 2 12 or 21> -version <6.0 or 6.2 or 6.4 or 7.0 or 7.2 or 7.4> -ip <IP_Address> -hostname <HostName> -saveConfig <Optional & Requires -agent and -version>`n" -ForegroundColor Yellow
     Write-Host "`nArguments -agent and -version are mandatory. If -saveConfig is not used, -ip is also mandatory, while -hostname is optional. When -saveConfig is used, only -agent and -version are required, assuming an active configuration file exists.`n" -ForegroundColor Yellow
     Write-Host "`nExample: <script.ps1 -agent 1 -version 6.4 -ip 192.168.1.2> -hostname is optional here since it script can use computer name.`n"
     Write-Host "`nExample: <script.ps1 -agent 12 -version 6.4 -ip 192.168.1.2> -hostname is optional here since it script can use computer name.`n"
@@ -232,16 +232,16 @@ function downloadAgent {
     # Check if the version parameter is provided, otherwise, ask the user for input
     if (!($version)) {
         Write-Host "`n`n"
-        $version = Read-Host '[Zabbix Agent] Select version, valid options are: 6.0 6.2 6.4'
+        $version = Read-Host '[Zabbix Agent] Select version, valid options are: 6.0 6.2 6.4 7.0 7.2 7.4'
     }
 
     $architecture = $env:PROCESSOR_ARCHITECTURE
     if ($version -eq "6.0") {
         if ($architecture -eq "AMD64") {
-            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.29/zabbix_agent-6.0.29-windows-amd64.zip"
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.41/zabbix_agent-6.0.41-windows-amd64.zip"
         }
         elseif ($architecture -eq "x86") {
-            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.29/zabbix_agent-6.0.29-windows-i386.zip"
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.41/zabbix_agent-6.0.41-windows-i386.zip"
         }
         else {
             Write-Host "`n[Zabbix Agent] Unsupported System Architecture. Terminating execution in 5 seconds.`n" -ForegroundColor Red
@@ -264,10 +264,49 @@ function downloadAgent {
     }
     elseif ($version -eq "6.4") {
         if ($architecture -eq "AMD64") {
-            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.16/zabbix_agent-6.4.16-windows-amd64.zip"
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.9/zabbix_agent-6.4.9-windows-amd64.zip"
         }
         elseif ($architecture -eq "x86") {
-            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.16/zabbix_agent-6.4.16-windows-i386.zip"
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.9/zabbix_agent-6.4.9-windows-i386.zip"
+        }
+        else {
+            Write-Host "`n[Zabbix Agent] Unsupported System Architecture. Terminating execution in 5 seconds.`n" -ForegroundColor Red
+            Start-Sleep -Seconds 5
+            exit 1
+        }
+    }
+    elseif ($version -eq "7.0") {
+        if ($architecture -eq "AMD64") {
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/7.0/7.0.18/zabbix_agent-7.0.18-windows-amd64.zip"
+        }
+        elseif ($architecture -eq "x86") {
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/7.0/7.0.18/zabbix_agent-7.0.18-windows-i386.zip"
+        }
+        else {
+            Write-Host "`n[Zabbix Agent] Unsupported System Architecture. Terminating execution in 5 seconds.`n" -ForegroundColor Red
+            Start-Sleep -Seconds 5
+            exit 1
+        }
+    }
+    elseif ($version -eq "7.2") {
+        if ($architecture -eq "AMD64") {
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/7.2/7.2.12/zabbix_agent-7.2.12-windows-amd64.zip"
+        }
+        elseif ($architecture -eq "x86") {
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/7.2/7.2.12/zabbix_agent-7.2.12-windows-i386.zip"
+        }
+        else {
+            Write-Host "`n[Zabbix Agent] Unsupported System Architecture. Terminating execution in 5 seconds.`n" -ForegroundColor Red
+            Start-Sleep -Seconds 5
+            exit 1
+        }
+    }
+    elseif ($version -eq "7.4") {
+        if ($architecture -eq "AMD64") {
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/7.4/7.4.2/zabbix_agent-7.4.2-windows-amd64.zip"
+        }
+        elseif ($architecture -eq "x86") {
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/7.4/7.4.2/zabbix_agent-7.4.2-windows-i386.zip"
         }
         else {
             Write-Host "`n[Zabbix Agent] Unsupported System Architecture. Terminating execution in 5 seconds.`n" -ForegroundColor Red
@@ -332,17 +371,17 @@ function downloadAgent2 {
     # Check if the version parameter is provided, otherwise, ask the user for input
     if (!($version)) {
         Write-Host "`n`n"
-        $version = Read-Host '[Zabbix Agent 2] Select version, valid options are: 6.0 6.2 6.4'
+        $version = Read-Host '[Zabbix Agent 2] Select version, valid options are: 6.0 6.2 6.4 7.0 7.2 7.4'
     }
 
     $architecture = $env:PROCESSOR_ARCHITECTURE
     if ($version -eq "6.0") {
         if ($architecture -eq "AMD64") {
-            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.29/zabbix_agent2-6.0.29-windows-amd64-static.zip"
-            $pluginUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.29/zabbix_agent2_plugins-6.0.29-windows-amd64.zip"
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.41/zabbix_agent2-6.0.41-windows-amd64-static.zip"
+            $pluginUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.41/zabbix_agent2_plugins-6.0.41-windows-amd64.zip"
         }
         elseif ($architecture -eq "x86") {
-            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.29/zabbix_agent2-6.0.29-windows-i386-static.zip"
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.41/zabbix_agent2-6.0.41-windows-i386-static.zip"
         }
         else {
             Write-Host "`n[Zabbix Agent 2] Unsupported System Architecture. Terminating execution in 5 seconds.`n" -ForegroundColor Red
@@ -366,11 +405,53 @@ function downloadAgent2 {
     }
     elseif ($version -eq "6.4") {
         if ($architecture -eq "AMD64") {
-            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.16/zabbix_agent2-6.4.16-windows-amd64-static.zip"
-            $pluginUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.16/zabbix_agent2_plugins-6.4.16-windows-amd64.zip"
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.9/zabbix_agent2-6.4.9-windows-amd64-static.zip"
+            $pluginUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.9/zabbix_agent2_plugins-6.4.9-windows-amd64.zip"
         }
         elseif ($architecture -eq "x86") {
-            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.16/zabbix_agent2-6.4.16-windows-i386-static.zip"
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.9/zabbix_agent2-6.4.9-windows-i386-static.zip"
+        }
+        else {
+            Write-Host "`n[Zabbix Agent 2] Unsupported System Architecture. Terminating execution in 5 seconds.`n" -ForegroundColor Red
+            Start-Sleep -Seconds 5
+            exit 1
+        }
+    }
+    elseif ($version -eq "7.0") {
+        if ($architecture -eq "AMD64") {
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/7.0/7.0.18/zabbix_agent2-7.0.18-windows-amd64-static.zip"
+            $pluginUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/7.0/7.0.18/zabbix_agent2_plugins-7.0.18-windows-amd64.zip"
+        }
+        elseif ($architecture -eq "x86") {
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/7.0/7.0.18/zabbix_agent2-7.0.18-windows-i386-static.zip"
+        }
+        else {
+            Write-Host "`n[Zabbix Agent 2] Unsupported System Architecture. Terminating execution in 5 seconds.`n" -ForegroundColor Red
+            Start-Sleep -Seconds 5
+            exit 1
+        }
+    }
+    elseif ($version -eq "7.2") {
+        if ($architecture -eq "AMD64") {
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/7.2/7.2.12/zabbix_agent2-7.2.12-windows-amd64-static.zip"
+            $pluginUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/7.2/7.2.12/zabbix_agent2_plugins-7.2.12-windows-amd64.zip"
+        }
+        elseif ($architecture -eq "x86") {
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/7.2/7.2.12/zabbix_agent2-7.2.12-windows-i386-static.zip"
+        }
+        else {
+            Write-Host "`n[Zabbix Agent 2] Unsupported System Architecture. Terminating execution in 5 seconds.`n" -ForegroundColor Red
+            Start-Sleep -Seconds 5
+            exit 1
+        }
+    }
+    elseif ($version -eq "7.4") {
+        if ($architecture -eq "AMD64") {
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/7.4/7.4.2/zabbix_agent2-7.4.2-windows-amd64-static.zip"
+            $pluginUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/7.4/7.4.2/zabbix_agent2_plugins-7.4.2-windows-amd64.zip"
+        }
+        elseif ($architecture -eq "x86") {
+            $agentUrl = "https://cdn.zabbix.com/zabbix/binaries/stable/7.4/7.4.2/zabbix_agent2-7.4.2-windows-i386-static.zip"
         }
         else {
             Write-Host "`n[Zabbix Agent 2] Unsupported System Architecture. Terminating execution in 5 seconds.`n" -ForegroundColor Red
