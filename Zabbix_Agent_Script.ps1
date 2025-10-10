@@ -142,6 +142,7 @@ $oldconfHostname
 function checkAgent2 {
     $zabbixProcess = Get-WmiObject -Class Win32_Process -Filter 'Name="zabbix_agent2.exe"'
     $zabbixService = Get-WmiObject -Class Win32_Service -Filter 'Name="Zabbix Agent 2"'
+    $registryKeyPath = "HKLM:\SYSTEM\CurrentControlSet\Services\EventLog\Application\Zabbix Agent 2"
 
     if ($zabbixProcess) {
         $pathZabbixExe = $zabbixProcess.Path
@@ -202,12 +203,10 @@ $oldconfHostname
     elseif ($zabbixService) {
         $null = $zabbixService.Delete()
         Write-Host "`n[Zabbix Agent 2] Service stopped and uninstalled successfully.`n" -ForegroundColor Green
-    
-        $registryKeyPath = "HKLM:\SYSTEM\CurrentControlSet\Services\EventLog\Application\Zabbix Agent 2"
-        if (Test-Path $registryKeyPath) {
-            Remove-Item -Path $registryKeyPath -Force
-            Write-Host "`n[Zabbix Agent 2] Registry key removed successfully.`n" -ForegroundColor Green
-        }
+    }
+    elseif (Test-Path $registryKeyPath) {
+        Remove-Item -Path $registryKeyPath -Force
+        Write-Host "`n[Zabbix Agent 2] Registry key removed successfully.`n" -ForegroundColor Green
     }
     else {
         Write-Host "`n[Zabbix Agent 2] Unable to find running agent or service, continuing...`n"
@@ -722,6 +721,7 @@ function hotUpdate {
 function hotUpdate2 {
     $zabbixProcess = Get-WmiObject -Class Win32_Process -Filter 'Name="zabbix_agent2.exe"'
     $zabbixService = Get-WmiObject -Class Win32_Service -Filter 'Name="Zabbix Agent 2"'
+    $registryKeyPath = "HKLM:\SYSTEM\CurrentControlSet\Services\EventLog\Application\Zabbix Agent 2"
 
     if ($zabbixProcess) {
         $pathZabbixExe = $zabbixProcess.Path
@@ -754,12 +754,10 @@ function hotUpdate2 {
     elseif ($zabbixService) {
         $null = $zabbixService.Delete()
         Write-Host "`n[Zabbix Agent 2] Service stopped and uninstalled successfully.`n" -ForegroundColor Green
-    
-        $registryKeyPath = "HKLM:\SYSTEM\CurrentControlSet\Services\EventLog\Application\Zabbix Agent 2"
-        if (Test-Path $registryKeyPath) {
-            Remove-Item -Path $registryKeyPath -Force
-            Write-Host "`n[Zabbix Agent 2] Registry key removed successfully.`n" -ForegroundColor Green
-        }
+    }
+    elseif (Test-Path $registryKeyPath) {
+        Remove-Item -Path $registryKeyPath -Force
+        Write-Host "`n[Zabbix Agent 2] Registry key removed successfully.`n" -ForegroundColor Green
     }
     else {
         Write-Host "`n[Zabbix Agent 2] Unable to find running agent or service. Terminating execution in 5 seconds.`n" -ForegroundColor Red
@@ -904,6 +902,8 @@ function zabbixAgent2 {
 function zabbixAgent12 {
     checkAgent
 
+    checkAgent2
+
     downloadAgent2
 
     setRunAgent2
@@ -912,6 +912,8 @@ function zabbixAgent12 {
 }
 
 function zabbixAgent21 {
+    checkAgent
+
     checkAgent2
 
     downloadAgent
